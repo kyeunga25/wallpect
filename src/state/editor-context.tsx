@@ -79,7 +79,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>("solid");
   const [backgroundColor, setBackgroundColor] = useState("#0b0f14");
   const [overlays, setOverlays] = useState(DEFAULT_OVERLAYS);
-  const [mobileTab, setMobileTab] = useState<MobileTab>("adjust");
+  const [mobileTab, setMobileTab] = useState<MobileTab>("device");
   const [announcement, setAnnouncement] = useState("");
   const [recentDeviceIds, setRecentDeviceIds] = useState<string[]>(() => {
     try {

@@ -17,7 +17,7 @@ const titles = {
 
 export function MobilePanel() {
   const { t } = useI18n();
-  const { mobileTab, orientedDevice, setMobileTab } = useEditor();
+  const { mobileTab, orientedDevice, profile, setMobileTab } = useEditor();
   return (
     <section className="mobile-panel">
       <div className="sheet-grabber">
@@ -27,7 +27,7 @@ export function MobilePanel() {
         <div>
           <strong>{t(titles[mobileTab])}</strong>
           <span>
-            {orientedDevice.outputWidth} × {orientedDevice.outputHeight}
+            {profile.model} · {orientedDevice.outputWidth} × {orientedDevice.outputHeight}
           </span>
         </div>
         {mobileTab !== "export" ? (
