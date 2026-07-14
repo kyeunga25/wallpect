@@ -19,6 +19,7 @@ function Cutout() {
     profile.display.physicalWidthPx,
     profile.display.physicalHeightPx,
     orientation,
+    profile.display.orientation,
   );
   if (!bounds) return null;
   const style = {

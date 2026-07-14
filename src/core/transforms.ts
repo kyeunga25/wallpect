@@ -9,8 +9,9 @@ export function orientRect(
   width: number,
   height: number,
   orientation: Orientation,
+  nativeOrientation: Orientation = "portrait",
 ): Rect | undefined {
-  if (!rect || orientation === "portrait") return rect;
+  if (!rect || orientation === nativeOrientation) return rect;
   return { x: height - rect.y - rect.height, y: rect.x, width: rect.height, height: rect.width };
 }
 

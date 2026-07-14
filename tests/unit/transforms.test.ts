@@ -25,6 +25,19 @@ describe("device orientation transforms", () => {
     });
   });
 
+  it("keeps a native-landscape MacBook notch at the top center", () => {
+    const profile = getDeviceProfile("apple-macbook-pro-14");
+    expect(
+      orientRect(
+        profile.cutout.boundsPx,
+        profile.display.physicalWidthPx,
+        profile.display.physicalHeightPx,
+        "landscape",
+        profile.display.orientation,
+      ),
+    ).toEqual(profile.cutout.boundsPx);
+  });
+
   it("converts pixels into stable normalized transforms", () => {
     expect(pixelsToNormalized(117.9, 1179)).toBeCloseTo(0.1);
   });
