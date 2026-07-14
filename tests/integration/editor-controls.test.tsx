@@ -19,10 +19,38 @@ describe("editor controls", () => {
   it("searches and selects a device profile", async () => {
     const user = userEvent.setup();
     renderWithEditor(<DeviceSelector />);
-    await user.type(screen.getByPlaceholderText("搜尋裝置…"), "14 Pro");
+    await user.type(screen.getByPlaceholderText("搜尋型號、年份或解析度…"), "14 Pro");
     const option = screen.getByRole("option", { name: /iPhone 14 Pro，2022/ });
     await user.click(option);
     expect(option).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("filters devices by resolution and clears the search with Escape", async () => {
+    const user = userEvent.setup();
+    renderWithEditor(<DeviceSelector />);
+    const search = screen.getByPlaceholderText("搜尋型號、年份或解析度…");
+
+    await user.type(search, "1290");
+    expect(screen.getByText("3 個結果")).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /iPhone 15 Pro Max，2023/ })).toBeInTheDocument();
+
+    await user.type(search, "{Escape}");
+    expect(search).toHaveValue("");
+    expect(screen.getByText("12 個結果")).toBeInTheDocument();
+  });
+
+  it("shows the selected device again after browsing another category", async () => {
+    const user = userEvent.setup();
+    renderWithEditor(<DeviceSelector />);
+
+    await user.click(screen.getByRole("button", { name: "iPad · 5" }));
+    expect(screen.getByText("5 個結果")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /目前裝置.*iPhone 15 Pro/ }));
+
+    expect(screen.getByRole("button", { name: "iPhone · 12" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 
   it("updates fit, zoom, and background controls", async () => {
