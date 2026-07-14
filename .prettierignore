@@ -1,0 +1,6 @@
+dist
+node_modules
+playwright-report
+test-results
+package-lock.json
+docs/WALLPECT_PRODUCT_REQUIREMENTS_AND_IMPLEMENTATION_PLAN.md

@@ -1,0 +1,33 @@
+# Dependencies and generated output
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+*.log
+.eslintcache
+.vite/
+.cache/
+.wrangler/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+*.local
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
