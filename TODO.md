@@ -16,7 +16,7 @@
 - [x] 在 Chromium、WebKit、Microsoft Edge 與 Firefox 執行自動相容性檢查
 - [x] 加入預設繁體中文，並支援簡體中文與英文切換
 - [x] 完成提交前的依賴、機密、瀏覽器介面與安全 header 審查
-- [ ] 建立 Cloudflare Pages 專案並綁定 `wallpect.k-y.cc`（需要部署權限）
+- [x] 建立 Cloudflare Pages 專案並綁定 `wallpect.k-y.cc`
 - [ ] 完成實體裝置 Safari、低記憶體流動裝置、CMYK JPEG 與 EXIF 手動 QA
 
 ## English
@@ -35,5 +35,5 @@
 - [x] Run automated compatibility checks in Chromium, WebKit, Microsoft Edge, and Firefox
 - [x] Default to Traditional Chinese and support Simplified Chinese and English switching
 - [x] Complete pre-commit dependency, secret, browser-surface, and security-header review
-- [ ] Create the Cloudflare Pages project and bind `wallpect.k-y.cc` (requires deployment access)
+- [x] Create the Cloudflare Pages project and bind `wallpect.k-y.cc`
 - [ ] Complete physical-device Safari, low-memory mobile, CMYK JPEG, and EXIF manual QA

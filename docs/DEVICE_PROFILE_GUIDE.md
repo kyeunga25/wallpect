@@ -4,6 +4,8 @@
 
 裝置設定檔是位於 `src/data/devices/apple/profiles.ts` 的純 TypeScript 記錄。預覽介面不含針對個別型號的分支；只要加入有效的設定檔，它便會自動出現在搜尋、選擇器、覆疊、資訊與匯出功能中。
 
+目前資料集包含 27 個 iPhone、20 個 2021 年或之後的 iPad，以及 27 個 2021 年或之後、具備內建螢幕的 Mac／Apple 顯示器設定檔。Mac mini、Mac Studio 與 Mac Pro 沒有內建螢幕，其桌布解析度由外接顯示器決定，因此不建立虛構的主機螢幕設定檔。
+
 ### 必填欄位
 
 每個設定檔必須包含：
@@ -44,6 +46,8 @@
 ## English
 
 Device profiles are plain TypeScript records in `src/data/devices/apple/profiles.ts`. The preview does not contain model-specific branches: adding a valid profile is enough for it to appear in search, selection, overlays, information, and export.
+
+The current data set contains 27 iPhones, 20 iPads introduced in 2021 or later, and 27 Macs with built-in displays or Apple displays introduced in 2021 or later. Mac mini, Mac Studio, and Mac Pro have no built-in display, so their wallpaper resolution is determined by the attached display and no fictitious computer-screen profile is created.
 
 ### Required fields
 

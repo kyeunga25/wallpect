@@ -2,6 +2,19 @@
   "name": "wallpect",
   "private": true,
   "version": "0.1.0",
+  "description": "Privacy-first wallpaper preview and fitting tool for Apple devices.",
+  "license": "MIT",
+  "homepage": "https://wallpect.k-y.cc",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kyeunga25/wallpect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kyeunga25/wallpect/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

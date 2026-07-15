@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { AdjustmentControls } from "../../src/components/editor-controls/AdjustmentControls";
 import { DeviceSelector } from "../../src/components/device-selector/DeviceSelector";
 import { OverlayPanel } from "../../src/components/overlays/OverlayPanel";
+import { DevicePreview } from "../../src/components/preview/DevicePreview";
 import { I18nProvider } from "../../src/i18n/i18n";
 import { EditorProvider } from "../../src/state/editor-context";
 
@@ -31,26 +32,42 @@ describe("editor controls", () => {
     const search = screen.getByPlaceholderText("搜尋型號、年份或解析度…");
 
     await user.type(search, "1290");
-    expect(screen.getByText("3 個結果")).toBeInTheDocument();
+    expect(screen.getByText("4 個結果")).toBeInTheDocument();
     expect(screen.getByRole("option", { name: /iPhone 15 Pro Max，2023/ })).toBeInTheDocument();
 
     await user.type(search, "{Escape}");
     expect(search).toHaveValue("");
-    expect(screen.getByText("12 個結果")).toBeInTheDocument();
+    expect(screen.getByText("27 個結果")).toBeInTheDocument();
   });
 
   it("shows the selected device again after browsing another category", async () => {
     const user = userEvent.setup();
     renderWithEditor(<DeviceSelector />);
 
-    await user.click(screen.getByRole("button", { name: "iPad · 5" }));
-    expect(screen.getByText("5 個結果")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "iPad · 20" }));
+    expect(screen.getByText("20 個結果")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: /目前裝置.*iPhone 15 Pro/ }));
 
-    expect(screen.getByRole("button", { name: "iPhone · 12" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "iPhone · 27" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+  });
+
+  it("renders MacBooks as laptops instead of desktop displays", async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithEditor(
+      <>
+        <DeviceSelector />
+        <DevicePreview />
+      </>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Mac · 27" }));
+    await user.click(screen.getByRole("option", { name: /MacBook Neo，2026/ }));
+
+    expect(container.querySelector(".laptop-base")).toBeInTheDocument();
+    expect(container.querySelector(".computer-stand")).not.toBeInTheDocument();
   });
 
   it("updates fit, zoom, and background controls", async () => {

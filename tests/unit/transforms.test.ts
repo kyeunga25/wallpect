@@ -12,7 +12,7 @@ describe("device orientation transforms", () => {
   });
 
   it("does not swap native landscape Macs", () => {
-    const profile = getDeviceProfile("apple-macbook-pro-14");
+    const profile = getDeviceProfile("apple-macbook-pro-14-m1-pro-max");
     expect(orientDevice(profile, "landscape").outputWidth).toBe(3024);
   });
 
@@ -26,7 +26,7 @@ describe("device orientation transforms", () => {
   });
 
   it("keeps a native-landscape MacBook notch at the top center", () => {
-    const profile = getDeviceProfile("apple-macbook-pro-14");
+    const profile = getDeviceProfile("apple-macbook-pro-14-m1-pro-max");
     expect(
       orientRect(
         profile.cutout.boundsPx,
