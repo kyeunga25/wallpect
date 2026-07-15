@@ -146,7 +146,10 @@ export function DevicePreview() {
   const { profile, orientedDevice, previewMode, setPreviewMode, frameVisible, setFrameVisible } =
     useEditor();
   const isMac = profile.platform === "macOS";
+  const isMacBook = profile.category === "macbook";
   const ratio = orientedDevice.outputWidth / orientedDevice.outputHeight;
+  const cornerX = `${(profile.display.cornerRadiusPx / orientedDevice.outputWidth) * 100}%`;
+  const cornerY = `${(profile.display.cornerRadiusPx / orientedDevice.outputHeight) * 100}%`;
   return (
     <main className="preview-stage">
       <div className="stage-toolbar">
@@ -171,8 +174,14 @@ export function DevicePreview() {
         />
       </div>
       <div
-        className={`device-scaler ${isMac ? "is-mac" : profile.category === "ipad" ? "is-ipad" : "is-phone"} is-${orientedDevice.activeOrientation} ${frameVisible ? "has-frame" : "screen-only"}`}
-        style={{ "--screen-ratio": ratio } as CSSProperties}
+        className={`device-scaler ${isMac ? `is-mac ${isMacBook ? "is-macbook" : "is-desktop-mac"}` : profile.category === "ipad" ? "is-ipad" : "is-phone"} is-${orientedDevice.activeOrientation} ${frameVisible ? "has-frame" : "screen-only"}`}
+        style={
+          {
+            "--screen-ratio": ratio,
+            "--screen-corner-x": cornerX,
+            "--screen-corner-y": cornerY,
+          } as CSSProperties
+        }
       >
         <div className="device-shell">
           <div className="screen-bezel">
@@ -184,15 +193,20 @@ export function DevicePreview() {
               <Cutout />
             </div>
           </div>
-          {isMac && frameVisible ? (
+          {isMac && !isMacBook && frameVisible ? (
             <div className="computer-chin">
               <span>
                 <Monitor size={14} />
               </span>
             </div>
           ) : null}
-          {isMac && frameVisible ? (
+          {isMac && !isMacBook && frameVisible ? (
             <div className="computer-stand">
+              <i />
+            </div>
+          ) : null}
+          {isMacBook && frameVisible ? (
+            <div className="laptop-base">
               <i />
             </div>
           ) : null}

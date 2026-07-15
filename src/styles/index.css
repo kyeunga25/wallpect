@@ -861,6 +861,10 @@ input[type="range"]::-webkit-slider-thumb {
   border-radius: 12px;
   background: linear-gradient(145deg, #30363d, #07090c 50%, #333942);
 }
+.is-macbook .device-shell {
+  padding: 8px;
+  border-radius: 11px 11px 6px 6px;
+}
 .screen-only .device-shell {
   padding: 0;
   border-color: transparent;
@@ -875,14 +879,14 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .screen-bezel {
   overflow: hidden;
-  border-radius: 11.2% / 5.2%;
+  border-radius: var(--screen-corner-x, 11.2%) / var(--screen-corner-y, 5.2%);
   background: #000;
 }
 .is-ipad .screen-bezel {
-  border-radius: 4%;
+  border-radius: var(--screen-corner-x, 4%) / var(--screen-corner-y, 4%);
 }
 .is-mac .screen-bezel {
-  border-radius: 6px;
+  border-radius: var(--screen-corner-x, 6px) / var(--screen-corner-y, 6px);
 }
 .device-screen {
   position: relative;
@@ -1146,6 +1150,27 @@ input[type="range"]::-webkit-slider-thumb {
   height: 12%;
   border-radius: 50%;
   background: #30363d;
+}
+.laptop-base {
+  position: absolute;
+  top: calc(100% - 2px);
+  left: -5%;
+  width: 110%;
+  height: 5.5%;
+  min-height: 7px;
+  border-radius: 2px 2px 10px 10px;
+  background: linear-gradient(180deg, #8e969e 0, #363d45 42%, #171b20 100%);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.38);
+  clip-path: polygon(4% 0, 96% 0, 100% 52%, 96% 100%, 4% 100%, 0 52%);
+}
+.laptop-base i {
+  position: absolute;
+  top: 0;
+  left: 43%;
+  width: 14%;
+  height: 42%;
+  border-radius: 0 0 8px 8px;
+  background: rgba(8, 10, 13, 0.72);
 }
 .stage-hint {
   display: flex;
@@ -1805,6 +1830,9 @@ input:checked + .switch::after {
   }
   .is-mac .device-shell {
     padding: 5px 5px 14px;
+  }
+  .is-macbook .device-shell {
+    padding: 5px;
   }
   .computer-chin {
     height: 13px;

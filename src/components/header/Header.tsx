@@ -30,7 +30,7 @@ export function Header({ onOpenInfo }: { onOpenInfo: (view: Exclude<InfoView, nu
         <button type="button" onClick={() => onOpenInfo("privacy")}>
           {t("Privacy")}
         </button>
-        <a href="https://github.com/" target="_blank" rel="noreferrer">
+        <a href="https://github.com/kyeunga25/wallpect" target="_blank" rel="noreferrer">
           GitHub <Code2 size={15} />
         </a>
       </nav>
