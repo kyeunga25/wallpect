@@ -2,12 +2,20 @@
 
 All notable changes to Wallpect are recorded in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
+
+## [0.2.0] - 2026-07-19
+
+### Added
+
+- Added Workers Builds production deployment from `main` and preview versions for non-production branches.
+- Added local Workers validation, preview, deployment, and deployed-environment E2E commands.
+- Added a repeatable release, production verification, and rollback guide.
 
 ### Changed
 
-- Migrated the deployment configuration from Cloudflare Pages to assets-only Workers Static Assets with explicit SPA fallback and preview deployments.
-- Pinned Wrangler and added local validation, preview, and deployment commands.
+- Migrated production from Cloudflare Pages to an assets-only Worker with Static Assets, explicit SPA fallback, and the existing Pages project retained as a rollback path.
+- Pinned Wrangler and aligned the bilingual project, contribution, deployment, implementation, and product documentation with the current architecture.
 - Added immutable caching for fingerprinted JavaScript and CSS while keeping the service worker revalidated.
 
 ## 0.1.0 - 2026-07-16
@@ -32,3 +40,6 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
+
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/kyeunga25/wallpect/releases/tag/v0.2.0
