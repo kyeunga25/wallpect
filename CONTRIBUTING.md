@@ -24,9 +24,9 @@
 5. 執行以下檢查：
 
 ```bash
-npm run lint
-npm test
-npm run build
+npm run check
+npm run format:check
+npm run worker:check
 ```
 
 涉及完整編輯流程、響應式版面或瀏覽器行為時，亦應執行：
@@ -34,6 +34,8 @@ npm run build
 ```bash
 npm run test:e2e
 ```
+
+部署或發布變更亦應按照[發布指南](docs/RELEASING.md)，先驗證非 production branch 的 Workers 預覽版本，再合併至 `main`。
 
 ### Pull request 清單
 
@@ -67,9 +69,9 @@ Thank you for helping improve Wallpect. Keep each issue or pull request focused 
 5. Run the core checks:
 
 ```bash
-npm run lint
-npm test
-npm run build
+npm run check
+npm run format:check
+npm run worker:check
 ```
 
 Also run the end-to-end suite when changing the complete editor flow, responsive layout, or browser behavior:
@@ -77,6 +79,8 @@ Also run the end-to-end suite when changing the complete editor flow, responsive
 ```bash
 npm run test:e2e
 ```
+
+For deployment or release changes, also follow the [release guide](docs/RELEASING.md) and validate the non-production Workers preview before merging to `main`.
 
 ### Pull request checklist
 

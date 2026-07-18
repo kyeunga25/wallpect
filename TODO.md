@@ -11,12 +11,14 @@
 - [x] 加入預覽模式、覆疊、裝置資訊與準確度說明
 - [x] 加入精確解析度的 PNG、JPEG、WebP 下載
 - [x] 加入桌面／流動版版面及無障礙控制
-- [x] 加入 Cloudflare Pages headers、設定、離線應用程式外殼、CI 與文檔
+- [x] 加入 Workers Static Assets headers、設定、離線應用程式外殼、CI 與文檔
 - [x] 加入單元、整合、端對端與瀏覽器視覺檢查
 - [x] 在 Chromium、WebKit、Microsoft Edge 與 Firefox 執行自動相容性檢查
 - [x] 加入預設繁體中文，並支援簡體中文與英文切換
 - [x] 完成提交前的依賴、機密、瀏覽器介面與安全 header 審查
-- [x] 建立 Cloudflare Pages 專案並綁定 `wallpect.k-y.cc`
+- [x] 以 Workers Builds 自動建立分支預覽，並從 `main` 部署 `wallpect.k-y.cc`
+- [x] 保留原有 Cloudflare Pages 專案作回退路徑
+- [x] 建立可重複的版本發布、正式驗證及 Workers 回退清單
 - [ ] 完成實體裝置 Safari、低記憶體流動裝置、CMYK JPEG 與 EXIF 手動 QA
 
 ## English
@@ -30,10 +32,12 @@
 - [x] Add preview modes, overlays, device information, and accuracy notes
 - [x] Add PNG, JPEG, WebP exact-resolution download
 - [x] Add desktop/mobile layout and accessible controls
-- [x] Add Cloudflare Pages headers, configuration, offline shell, CI, and documentation
+- [x] Add Workers Static Assets headers, configuration, offline shell, CI, and documentation
 - [x] Add unit, integration, E2E, and visual browser checks
 - [x] Run automated compatibility checks in Chromium, WebKit, Microsoft Edge, and Firefox
 - [x] Default to Traditional Chinese and support Simplified Chinese and English switching
 - [x] Complete pre-commit dependency, secret, browser-surface, and security-header review
-- [x] Create the Cloudflare Pages project and bind `wallpect.k-y.cc`
+- [x] Build branch previews automatically and deploy `main` to `wallpect.k-y.cc` with Workers Builds
+- [x] Retain the existing Cloudflare Pages project as a rollback path
+- [x] Document repeatable release, production verification, and Workers rollback procedures
 - [ ] Complete physical-device Safari, low-memory mobile, CMYK JPEG, and EXIF manual QA
