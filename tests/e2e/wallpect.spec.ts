@@ -10,7 +10,10 @@ test("@desktop upload, select, adjust, toggle an overlay, and export exact PNG",
   await fileInput.setInputFiles("public/assets/sample-aurora-wallpaper.png");
   await expect(page.getByText("sample-aurora-wallpaper.png").first()).toBeVisible();
 
-  await page.getByPlaceholder("搜尋型號、年份或解析度…").fill("iPhone 14 Pro");
+  await page
+    .locator(".left-rail")
+    .getByPlaceholder("搜尋型號、年份或解析度…")
+    .fill("iPhone 14 Pro");
   await page.getByRole("option", { name: /iPhone 14 Pro，2022/ }).click();
   await page.getByRole("button", { name: "完整顯示" }).first().click();
   await page.getByRole("slider", { name: "縮放", exact: true }).fill("118");
@@ -38,7 +41,7 @@ test("@mobile workspace has no horizontal overflow and exposes all editor tabs",
   await page.goto("/");
   await expect(page.getByRole("navigation", { name: "編輯器面板" })).toBeVisible();
   for (const label of ["圖片", "裝置", "調整", "覆疊", "匯出"])
-    await expect(page.getByRole("button", { name: label })).toBeVisible();
+    await expect(page.getByRole("button", { name: label, exact: true })).toBeVisible();
   const dimensions = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     width: document.documentElement.clientWidth,

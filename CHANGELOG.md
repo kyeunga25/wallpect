@@ -2,6 +2,14 @@
 
 All notable changes to Wallpect are recorded in this file. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Migrated the deployment configuration from Cloudflare Pages to assets-only Workers Static Assets with explicit SPA fallback and preview deployments.
+- Pinned Wrangler and added local validation, preview, and deployment commands.
+- Added immutable caching for fingerprinted JavaScript and CSS while keeping the service worker revalidated.
+
 ## 0.1.0 - 2026-07-16
 
 ### Added
