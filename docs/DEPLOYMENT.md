@@ -53,6 +53,13 @@ Workers Builds 設定：
 
 Cloudflare 會使用 `package.json` 鎖定的 Wrangler 版本；本機仍可使用 `npm run worker:deploy` 與 `npm run worker:preview` 作為相同命令的簡寫。
 
+相關官方文件：
+
+- [Workers Builds 設定](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
+- [Build branch 控制](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/)
+- [Static Assets SPA 導覽](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)
+- [版本回退](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/)
+
 ### 安全 header
 
 Workers Static Assets 會直接讀取 `public/_headers` 建置後的 `dist/_headers`。它會設定 CSP、`nosniff`、referrer policy、permissions policy、same-origin opener policy 與快取規則。CSP 刻意只允許同源 scripts／styles，以及本機圖片處理與下載所需的 `blob:` 圖片／worker。收緊設定後，必須重新測試 Canvas 匯出與 service worker。
@@ -136,6 +143,13 @@ Workers Builds settings:
 5. Enable non-production branch builds and keep the default `npx wrangler versions upload` command to create preview versions without affecting production traffic.
 
 Cloudflare uses the Wrangler version pinned in `package.json`; `npm run worker:deploy` and `npm run worker:preview` remain available as equivalent local aliases.
+
+Related official documentation:
+
+- [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
+- [Build branch control](https://developers.cloudflare.com/workers/ci-cd/builds/build-branches/)
+- [Static Assets SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)
+- [Version rollbacks](https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/)
 
 ### Security headers
 

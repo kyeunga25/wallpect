@@ -7,6 +7,7 @@
 [Open Wallpect](https://wallpect.k-y.cc) · [繁體中文](README.zh-Hant.md) · [Documentation](#documentation)
 
 [![CI](https://github.com/kyeunga25/wallpect/actions/workflows/ci.yml/badge.svg)](https://github.com/kyeunga25/wallpect/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/kyeunga25/wallpect?display_name=tag&sort=semver)](https://github.com/kyeunga25/wallpect/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-2563eb.svg)](LICENSE)
 [![Live app](https://img.shields.io/badge/Live-wallpect.k--y.cc-16a34a.svg)](https://wallpect.k-y.cc)
 
@@ -25,7 +26,7 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 ### Highlights
 
 - 74 profiles: 27 iPhone, 20 iPad, and 27 Mac/display profiles, covering every requested display family introduced from 2021 through July 2026
-- Local PNG, JPEG, and WebP decoding with file, dimension, and pixel-count limits
+- Local PNG, JPEG, and WebP decoding, limited to 30 MB, 12,000 px on the longest edge, and 72 megapixels
 - Portrait and landscape compositions stored independently for each device
 - Solid, transparent, or blurred-extension backgrounds
 - Shared transform and Canvas rendering calculations for preview and export
@@ -73,9 +74,9 @@ npm run dev
 Run the core quality checks:
 
 ```bash
-npm run lint
-npm test
-npm run build
+npm run check
+npm run format:check
+npm run worker:check
 ```
 
 The Playwright suite additionally covers Chromium, WebKit, Microsoft Edge, and Firefox:
@@ -83,6 +84,14 @@ The Playwright suite additionally covers Chromium, WebKit, Microsoft Edge, and F
 ```bash
 npm run test:e2e
 ```
+
+Set `PLAYWRIGHT_BASE_URL` to run the same browser matrix against a deployed Workers preview or the production app.
+
+## Deployment and releases
+
+Wallpect is deployed as an assets-only Cloudflare Worker with Static Assets. A push to `main` triggers a production Workers Build; non-production branches create preview versions without changing production traffic. The previous Pages project is retained only as a documented rollback path.
+
+See the [deployment guide](docs/DEPLOYMENT.md) for platform settings and the [release guide](docs/RELEASING.md) for the version, validation, preview, production, and rollback checklist.
 
 ## Architecture
 
@@ -102,6 +111,7 @@ Preview and export both call `renderWallpaper`. Pan offsets use the target canva
 - [Accuracy policy](docs/ACCURACY_POLICY.md)
 - [Device profile guide](docs/DEVICE_PROFILE_GUIDE.md)
 - [Deployment guide](docs/DEPLOYMENT.md)
+- [Release guide](docs/RELEASING.md)
 - [Product requirements and implementation plan](docs/WALLPECT_PRODUCT_REQUIREMENTS_AND_IMPLEMENTATION_PLAN.md)
 - [Implementation checklist](TODO.md)
 - [Changelog](CHANGELOG.md)
