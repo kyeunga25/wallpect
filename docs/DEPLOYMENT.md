@@ -8,8 +8,8 @@
 Project: wallpect
 Production branch: main
 Build command: npm run build
-Deploy command: npm run worker:deploy
-Non-production branch deploy command: npm run worker:preview
+Deploy command: npx wrangler deploy
+Non-production branch deploy command: npx wrangler versions upload
 Node.js: 22 或以上版本
 ```
 
@@ -48,8 +48,10 @@ Workers Builds 設定：
 1. 連接 GitHub repository；
 2. Production branch 設為 `main`；
 3. Build command 設為 `npm run build`；
-4. Deploy command 設為 `npm run worker:deploy`；
-5. 開啟 non-production branch builds，並將其 deploy command 設為 `npm run worker:preview`。
+4. Deploy command 使用 Workers Builds 預設的 `npx wrangler deploy`；
+5. 開啟 non-production branch builds，並使用預設的 `npx wrangler versions upload` 建立不影響正式流量的 preview version。
+
+Cloudflare 會使用 `package.json` 鎖定的 Wrangler 版本；本機仍可使用 `npm run worker:deploy` 與 `npm run worker:preview` 作為相同命令的簡寫。
 
 ### 安全 header
 
@@ -90,8 +92,8 @@ PLAYWRIGHT_BASE_URL=https://<preview-url> npm run test:e2e
 Project: wallpect
 Production branch: main
 Build command: npm run build
-Deploy command: npm run worker:deploy
-Non-production branch deploy command: npm run worker:preview
+Deploy command: npx wrangler deploy
+Non-production branch deploy command: npx wrangler versions upload
 Node.js: 22 or newer
 ```
 
@@ -130,8 +132,10 @@ Workers Builds settings:
 1. Connect the GitHub repository.
 2. Set the production branch to `main`.
 3. Set the build command to `npm run build`.
-4. Set the deploy command to `npm run worker:deploy`.
-5. Enable non-production branch builds and set their deploy command to `npm run worker:preview`.
+4. Keep the Workers Builds default deploy command, `npx wrangler deploy`.
+5. Enable non-production branch builds and keep the default `npx wrangler versions upload` command to create preview versions without affecting production traffic.
+
+Cloudflare uses the Wrangler version pinned in `package.json`; `npm run worker:deploy` and `npm run worker:preview` remain available as equivalent local aliases.
 
 ### Security headers
 
