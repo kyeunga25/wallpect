@@ -4,6 +4,8 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-07-23
+
 ### Changed
 
 - Moved `wallpect.k-y.cc` from a Worker route over the former Pages DNS record to a Workers Custom Domain.
@@ -50,5 +52,6 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
 
-[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/kyeunga25/wallpect/releases/tag/v0.2.0
