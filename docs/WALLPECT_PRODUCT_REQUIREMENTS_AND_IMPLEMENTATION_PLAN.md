@@ -1139,11 +1139,11 @@ Production branch: main
 流量與預覽：
 
 ```text
-main → wallpect.k-y.cc/* Workers route
+main → wallpect.k-y.cc Workers Custom Domain
 non-production branch → Workers version preview URL
 ```
 
-原有 Pages project 只保留為回退路徑；日常正式部署、分支預覽及版本回退均以 Workers 為準。完整設定及驗證程序見 `docs/DEPLOYMENT.md` 與 `docs/RELEASING.md`。
+`wallpect.k-y.cc` 由 Worker Custom Domain 直接管理；正式部署、分支預覽及版本回退均以 Workers 為準，不依賴 Pages project。完整設定及驗證程序見 `docs/DEPLOYMENT.md` 與 `docs/RELEASING.md`。
 
 ### 15.2 Headers
 

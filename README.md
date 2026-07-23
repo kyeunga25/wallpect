@@ -89,7 +89,7 @@ Set `PLAYWRIGHT_BASE_URL` to run the same browser matrix against a deployed Work
 
 ## Deployment and releases
 
-Wallpect is deployed as an assets-only Cloudflare Worker with Static Assets. A push to `main` triggers a production Workers Build; non-production branches create preview versions without changing production traffic. The previous Pages project is retained only as a documented rollback path.
+Wallpect is deployed as an assets-only Cloudflare Worker with Static Assets. The Worker owns `wallpect.k-y.cc` as a Custom Domain. A push to `main` triggers a production Workers Build; non-production branches create preview versions without changing production traffic. Production rollback uses Workers version history; no Cloudflare Pages project is required.
 
 See the [deployment guide](docs/DEPLOYMENT.md) for platform settings and the [release guide](docs/RELEASING.md) for the version, validation, preview, production, and rollback checklist.
 

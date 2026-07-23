@@ -53,7 +53,7 @@ PLAYWRIGHT_BASE_URL=https://<preview-url> npm run test:e2e
 
 若新版本有問題，優先以 Cloudflare Dashboard 的 Worker → Deployments 選擇上一個穩定版本，或使用 `wrangler rollback <version-id>`。回退會建立一個新的 deployment，並把所選版本設為 100% 正式流量。
 
-若 Workers route 本身有問題，可在 Cloudflare Dashboard 移除 `wallpect.k-y.cc/*` Worker route，讓保留的 Pages custom domain 回復接收流量。完成事故記錄及修正前，不要刪除可用的舊 Worker version 或 Pages project。
+`wallpect.k-y.cc` 是 Worker 的 Custom Domain；回退時保留此網域綁定，只切換 deployment version。完成事故記錄及修正前，不要刪除可用的舊 Worker version。
 
 ## English
 
@@ -108,4 +108,4 @@ PLAYWRIGHT_BASE_URL=https://<preview-url> npm run test:e2e
 
 If the release is unhealthy, select the previous stable version under Worker → Deployments in the Cloudflare dashboard, or run `wrangler rollback <version-id>`. A rollback creates a new deployment and sends 100% of production traffic to the selected version.
 
-If the Worker route itself is unhealthy, remove the `wallpect.k-y.cc/*` Worker route in the Cloudflare dashboard so the retained Pages custom domain receives traffic again. Do not delete usable Worker versions or the Pages project until the incident is recorded and fixed.
+`wallpect.k-y.cc` is the Worker's Custom Domain. Keep that domain binding in place during rollback and switch only the deployment version. Do not delete usable Worker versions until the incident is recorded and fixed.

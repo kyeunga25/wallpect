@@ -17,7 +17,7 @@
 - [x] 加入預設繁體中文，並支援簡體中文與英文切換
 - [x] 完成提交前的依賴、機密、瀏覽器介面與安全 header 審查
 - [x] 以 Workers Builds 自動建立分支預覽，並從 `main` 部署 `wallpect.k-y.cc`
-- [x] 保留原有 Cloudflare Pages 專案作回退路徑
+- [x] 將正式網域改為 Workers Custom Domain，並移除多餘的 Cloudflare Pages 專案
 - [x] 建立可重複的版本發布、正式驗證及 Workers 回退清單
 - [ ] 完成實體裝置 Safari、低記憶體流動裝置、CMYK JPEG 與 EXIF 手動 QA
 
@@ -38,6 +38,6 @@
 - [x] Default to Traditional Chinese and support Simplified Chinese and English switching
 - [x] Complete pre-commit dependency, secret, browser-surface, and security-header review
 - [x] Build branch previews automatically and deploy `main` to `wallpect.k-y.cc` with Workers Builds
-- [x] Retain the existing Cloudflare Pages project as a rollback path
+- [x] Move the production hostname to a Workers Custom Domain and remove the redundant Cloudflare Pages project
 - [x] Document repeatable release, production verification, and Workers rollback procedures
 - [ ] Complete physical-device Safari, low-memory mobile, CMYK JPEG, and EXIF manual QA

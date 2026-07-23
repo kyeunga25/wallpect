@@ -4,6 +4,15 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+### Changed
+
+- Moved `wallpect.k-y.cc` from a Worker route over the former Pages DNS record to a Workers Custom Domain.
+- Updated deployment and rollback documentation for the Workers-only production architecture.
+
+### Removed
+
+- Removed the redundant Cloudflare Pages project, its public `pages.dev` deployment endpoint, and duplicate Git builds.
+
 ## [0.2.0] - 2026-07-19
 
 ### Added
