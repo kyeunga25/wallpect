@@ -89,7 +89,7 @@ npm run test:e2e
 
 ## 部署與版本發布
 
-Wallpect 以不含 Worker script 的 Cloudflare Workers Static Assets 模式部署。推送至 `main` 會觸發正式 Workers Build；其他分支只會建立預覽版本，不會改變正式流量。原有 Pages 專案只保留作已記錄的回退路徑。
+Wallpect 以不含 Worker script 的 Cloudflare Workers Static Assets 模式部署，並由 Worker 以 Custom Domain 直接管理 `wallpect.k-y.cc`。推送至 `main` 會觸發正式 Workers Build；其他分支只會建立預覽版本，不會改變正式流量。正式回退使用 Workers 版本記錄，不再需要 Cloudflare Pages 專案。
 
 平台設定請參閱[部署指南](docs/DEPLOYMENT.md)；版本、驗證、預覽、正式部署及回退程序請參閱[發布指南](docs/RELEASING.md)。
 

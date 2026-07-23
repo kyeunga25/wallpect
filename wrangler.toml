@@ -4,8 +4,8 @@ workers_dev = true
 preview_urls = true
 
 [[routes]]
-pattern = "wallpect.k-y.cc/*"
-zone_name = "k-y.cc"
+pattern = "wallpect.k-y.cc"
+custom_domain = true
 
 [assets]
 directory = "./dist"
