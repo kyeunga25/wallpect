@@ -68,6 +68,42 @@ test("@desktop defaults to Traditional Chinese and persists language switches", 
   await expect(page).toHaveTitle("Wallpect — 精准检查壁纸构图");
 });
 
+test("@desktop exposes accurate privacy, terms, disclaimer, and source notices", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "隱私", exact: true }).first().click();
+  const privacyDialog = page.getByRole("dialog");
+  await expect(
+    privacyDialog.getByRole("heading", { name: "你的圖片只留在裝置上。" }),
+  ).toBeVisible();
+  await expect(privacyDialog).toContainText("最多四個最近使用的裝置識別碼");
+  await expect(privacyDialog).toContainText("託管於 Cloudflare");
+  await privacyDialog.getByRole("button", { name: "關閉" }).click();
+
+  await page.getByRole("button", { name: "條款與資料", exact: true }).first().click();
+  const legalDialog = page.getByRole("dialog");
+  await expect(legalDialog.getByRole("heading", { name: "條款、私隱與資料使用。" })).toBeVisible();
+  await expect(legalDialog.getByRole("heading", { name: "使用條款" })).toBeVisible();
+  await expect(legalDialog.getByRole("heading", { name: "資料來源與方法" })).toBeVisible();
+  await expect(legalDialog).toContainText("不使用 Apple 或第三方裝置資料 API");
+  await expect(legalDialog).toContainText("並非法律意見");
+  await expect(legalDialog.getByRole("link", { name: /Apple 網站使用條款/ })).toHaveAttribute(
+    "rel",
+    "noreferrer",
+  );
+});
+
+test("@mobile legal notice is reachable and closes the navigation menu", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "開啟選單" }).click();
+  const navigation = page.getByRole("navigation", { name: "主要導覽" });
+  await expect(navigation).toHaveClass(/is-open/);
+  await navigation.getByRole("button", { name: "條款與資料" }).click();
+  await expect(page.locator("#primary-navigation")).not.toHaveClass(/is-open/);
+  await expect(page.getByRole("dialog").getByRole("heading", { name: "使用條款" })).toBeVisible();
+});
+
 test("@browser-matrix loads the editor, sample image, and device canvas", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/Wallpect/);

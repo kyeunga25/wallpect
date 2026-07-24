@@ -4,6 +4,27 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-07-25
+
+### Added
+
+- Added Traditional Chinese and English terms, privacy, disclaimer, trademark, and data-source notices inside the app.
+- Added a public legal, privacy, and data policy with a review gate for future third-party sources, SDKs, and APIs.
+- Added profile validation for safe source URLs, real review dates, finite geometry, in-bounds overlays, and unique slugs.
+- Added automated coverage for the legal and privacy interface on desktop and mobile.
+
+### Changed
+
+- Documented the exact browser-memory, versioned `localStorage`, browser-cache, and Cloudflare network-data boundaries.
+- Prevented overlapping image decodes and restored same-file selection after a decode attempt.
+- Updated Wrangler to `4.114.0`, pinned GitHub Actions to reviewed commits, and limited CI permissions to read-only repository contents.
+- Tightened public-repository hygiene and release review guidance.
+
+### Security
+
+- Restricted device-profile source URLs to credential-free HTTPS links on `support.apple.com`.
+- Confirmed zero known npm vulnerabilities in both the complete and production dependency graphs at release preparation time.
+
 ## [0.2.1] - 2026-07-23
 
 ### Changed
@@ -52,6 +73,7 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
 
-[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/kyeunga25/wallpect/releases/tag/v0.2.0

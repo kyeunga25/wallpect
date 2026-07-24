@@ -43,7 +43,9 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 4. Adjust the composition and enable the guides you want to inspect.
 5. Choose PNG, JPEG, or WebP and export at the displayed resolution.
 
-Your image stays in browser memory and is released when it is replaced or the page is closed. Only preferences such as the recent device identifier may be saved in `localStorage`.
+Your image stays in browser memory and is released when it is replaced, the page is refreshed, or the page is closed. Only the selected locale and up to four recent device identifiers are saved in versioned `localStorage`. Normal requests for public site files still pass through Cloudflare, but they do not contain your selected image bytes.
+
+The website provides directly accessible Traditional Chinese and English privacy, terms, disclaimer, and data-source notices. Maintenance and third-party source/API rules are documented in the [Terms, Privacy, and Data Policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md).
 
 <p align="center">
   <img src="docs/screenshots/wallpect-mobile.png" width="320" alt="Wallpect mobile workspace showing the device selector and wallpaper preview">
@@ -112,8 +114,7 @@ Preview and export both call `renderWallpaper`. Pan offsets use the target canva
 - [Device profile guide](docs/DEVICE_PROFILE_GUIDE.md)
 - [Deployment guide](docs/DEPLOYMENT.md)
 - [Release guide](docs/RELEASING.md)
-- [Product requirements and implementation plan](docs/WALLPECT_PRODUCT_REQUIREMENTS_AND_IMPLEMENTATION_PLAN.md)
-- [Implementation checklist](TODO.md)
+- [Legal, privacy, and data policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)
 - [Changelog](CHANGELOG.md)
 
 ## Contributing
@@ -125,3 +126,5 @@ Issues and focused pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTIN
 Wallpect is available under the [MIT License](LICENSE).
 
 Wallpect is an independent tool. It is not affiliated with or endorsed by Apple Inc. Apple product names are used only to identify compatible device profiles.
+
+Device specifications are manually curated from linked public manufacturer support pages. Wallpect does not use an Apple or third-party device-data API at runtime and does not scrape or mirror Apple website content. See the [Terms, Privacy, and Data Policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md) for the detailed limitations and data-governance gate.

@@ -3,32 +3,43 @@ import { useState } from "react";
 import { useI18n, type Locale } from "../../i18n/i18n";
 import { BrandMark } from "../preview/BrandMark";
 
-export type InfoView = "about" | "devices" | "privacy" | null;
+export type InfoView = "about" | "devices" | "privacy" | "legal" | null;
 
 export function Header({ onOpenInfo }: { onOpenInfo: (view: Exclude<InfoView, null>) => void }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { locale, setLocale, t } = useI18n();
+  const openInfo = (view: Exclude<InfoView, null>) => {
+    setMenuOpen(false);
+    onOpenInfo(view);
+  };
   return (
     <header className="app-header">
       <button
         className="brand"
         type="button"
-        onClick={() => onOpenInfo("about")}
+        onClick={() => openInfo("about")}
         aria-label={t("About Wallpect")}
       >
         <BrandMark />
         <span>Wallpect</span>
         <em>{t("Beta")}</em>
       </button>
-      <nav className={menuOpen ? "is-open" : ""} aria-label={t("Primary navigation")}>
-        <button type="button" onClick={() => onOpenInfo("about")}>
+      <nav
+        id="primary-navigation"
+        className={menuOpen ? "is-open" : ""}
+        aria-label={t("Primary navigation")}
+      >
+        <button type="button" onClick={() => openInfo("about")}>
           {t("About")}
         </button>
-        <button type="button" onClick={() => onOpenInfo("devices")}>
+        <button type="button" onClick={() => openInfo("devices")}>
           {t("Device data")}
         </button>
-        <button type="button" onClick={() => onOpenInfo("privacy")}>
+        <button type="button" onClick={() => openInfo("privacy")}>
           {t("Privacy")}
+        </button>
+        <button type="button" onClick={() => openInfo("legal")}>
+          {t("Legal & data")}
         </button>
         <a href="https://github.com/kyeunga25/wallpect" target="_blank" rel="noreferrer">
           GitHub <Code2 size={15} />
@@ -56,6 +67,8 @@ export function Header({ onOpenInfo }: { onOpenInfo: (view: Exclude<InfoView, nu
         type="button"
         className="menu-button"
         aria-label={menuOpen ? t("Close menu") : t("Open menu")}
+        aria-expanded={menuOpen}
+        aria-controls="primary-navigation"
         onClick={() => setMenuOpen((open) => !open)}
       >
         {menuOpen ? <X /> : <Menu />}

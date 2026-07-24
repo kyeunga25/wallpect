@@ -62,7 +62,7 @@ function Workspace() {
       </div>
       <MobileTabs />
       <MobilePanel />
-      <Footer />
+      <Footer onOpenInfo={setInfo} />
       <InfoDialog view={info} onClose={() => setInfo(null)} />
       <div className="visually-hidden" aria-live="polite">
         {announcement}

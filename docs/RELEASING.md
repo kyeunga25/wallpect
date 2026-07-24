@@ -14,6 +14,7 @@ Wallpect 使用 Semantic Versioning，版本資料以 `package.json`、`package-
 3. 同步更新 `package.json` 與 `package-lock.json`。
 4. 將 `CHANGELOG.md` 的 `Unreleased` 內容移至帶日期的版本標題。
 5. 更新受影響的 README、部署、準確度、裝置資料或產品文件。
+6. 審核所有已追蹤及新增檔案，排除私人資料、憑證、供應商識別碼、內部規劃及非公開商業資料；公開設定只保留部署所必需的產品名稱與網址。
 
 ### 2. 本機驗證
 
@@ -69,6 +70,7 @@ Wallpect follows Semantic Versioning. `package.json`, `package-lock.json`, `CHAN
 3. Keep `package.json` and `package-lock.json` in sync.
 4. Move `CHANGELOG.md` entries from `Unreleased` into a dated version section.
 5. Update affected README, deployment, accuracy, device-data, or product documentation.
+6. Review every tracked and new file for personal data, credentials, provider identifiers, internal planning, and non-public business information. Keep only product names and URLs required for public deployment.
 
 ### 2. Validate locally
 
