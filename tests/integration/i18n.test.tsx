@@ -26,6 +26,8 @@ describe("language interface", () => {
 
     await user.selectOptions(language, "en");
     expect(screen.getByRole("button", { name: "About" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Legal & data" })).toBeInTheDocument();
+    expect(localStorage.getItem("wallpect:locale:v1")).toBe("en");
     await waitFor(() => expect(document.documentElement.lang).toBe("en"));
 
     first.unmount();

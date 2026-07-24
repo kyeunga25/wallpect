@@ -58,4 +58,42 @@ describe("Apple device profiles", () => {
     expect(new Set(deviceProfiles.map((profile) => profile.id)).size).toBe(deviceProfiles.length);
     expect(new Set(deviceProfiles.map((profile) => profile.slug)).size).toBe(deviceProfiles.length);
   });
+
+  it("rejects unsafe or malformed source and geometry data", () => {
+    const unsafeSource = structuredClone(deviceProfiles[0]);
+    unsafeSource.metadata.sourceUrls = ["javascript:alert(1)"];
+    expect(validateDeviceProfile(unsafeSource)).toContain(
+      "source URL must use HTTPS on support.apple.com without credentials",
+    );
+
+    const invalidNumber = structuredClone(deviceProfiles[0]);
+    invalidNumber.display.physicalWidthPx = Number.NaN;
+    expect(validateDeviceProfile(invalidNumber)).toContain(
+      "physical resolution must be finite and positive",
+    );
+
+    const invalidDate = structuredClone(deviceProfiles[0]);
+    invalidDate.metadata.lastVerified = "2026-02-30";
+    expect(validateDeviceProfile(invalidDate)).toContain(
+      "lastVerified must be a real YYYY-MM-DD date",
+    );
+
+    const outOfBoundsOverlay = structuredClone(deviceProfiles[0]);
+    outOfBoundsOverlay.overlays.statusBar = {
+      x: 0,
+      y: 0,
+      width: outOfBoundsOverlay.display.physicalWidthPx + 1,
+      height: 10,
+    };
+    expect(validateDeviceProfile(outOfBoundsOverlay)).toContain(
+      "statusBar must fit inside the physical display",
+    );
+  });
+
+  it("rejects duplicate slugs independently of ids", () => {
+    const first = structuredClone(deviceProfiles[0]);
+    const second = structuredClone(deviceProfiles[1]);
+    second.slug = first.slug;
+    expect(() => validateDeviceProfiles([first, second])).toThrow("duplicate slug");
+  });
 });

@@ -1,7 +1,7 @@
 {
   "name": "wallpect",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Privacy-first wallpaper preview and fitting tool for Apple devices.",
   "license": "MIT",
   "homepage": "https://wallpect.k-y.cc",
@@ -56,6 +56,6 @@
     "typescript-eslint": "8.63.0",
     "vite": "8.1.4",
     "vitest": "4.1.10",
-    "wrangler": "4.112.0"
+    "wrangler": "4.114.0"
   }
 }

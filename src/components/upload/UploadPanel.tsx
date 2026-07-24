@@ -15,13 +15,17 @@ function formatBytes(bytes: number, bundledDemo: string) {
 export function UploadPanel() {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const loadingRef = useRef(false);
   const { t } = useI18n();
   const { image, setImage, setAnnouncement } = useEditor();
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function load(file: File | undefined) {
-    if (!file) return;
+    if (!file || loadingRef.current) return;
+    loadingRef.current = true;
+    setLoading(true);
     setError("");
     try {
       const asset = await decodeImageFile(file);
@@ -29,12 +33,17 @@ export function UploadPanel() {
       setAnnouncement(t("{name} loaded locally.", { name: file.name }));
     } catch (reason) {
       setError(t(reason instanceof Error ? reason.message : "The image could not be loaded."));
+    } finally {
+      loadingRef.current = false;
+      setLoading(false);
+      if (inputRef.current) inputRef.current.value = "";
     }
   }
 
   function drop(event: DragEvent<HTMLDivElement>) {
     event.preventDefault();
     setDragging(false);
+    if (loadingRef.current) return;
     void load(event.dataTransfer.files[0]);
   }
 
@@ -45,6 +54,7 @@ export function UploadPanel() {
         id={inputId}
         className="visually-hidden"
         type="file"
+        disabled={loading}
         accept="image/png,image/jpeg,image/webp"
         onChange={(event) => void load(event.target.files?.[0])}
         aria-describedby={error ? `${inputId}-error` : undefined}
@@ -67,6 +77,7 @@ export function UploadPanel() {
           <button
             className="compact-button"
             type="button"
+            disabled={loading}
             onClick={() => inputRef.current?.click()}
           >
             <Replace size={15} /> {t("Replace")}
@@ -76,6 +87,7 @@ export function UploadPanel() {
             type="button"
             aria-label={t("Remove image")}
             title={t("Remove image")}
+            disabled={loading}
             onClick={() => setImage(null)}
           >
             <Trash2 size={16} />
@@ -83,8 +95,9 @@ export function UploadPanel() {
         </div>
       ) : (
         <div
-          className={`drop-zone ${dragging ? "is-dragging" : ""}`}
-          onDragEnter={() => setDragging(true)}
+          className={`drop-zone ${dragging ? "is-dragging" : ""} ${loading ? "is-loading" : ""}`}
+          aria-busy={loading}
+          onDragEnter={() => !loadingRef.current && setDragging(true)}
           onDragLeave={() => setDragging(false)}
           onDragOver={(event) => event.preventDefault()}
           onDrop={drop}
@@ -92,8 +105,8 @@ export function UploadPanel() {
           <UploadCloud />
           <strong>{t("Drop an image here")}</strong>
           <span>{t("PNG, JPEG, or WebP · up to 30 MB")}</span>
-          <button type="button" onClick={() => inputRef.current?.click()}>
-            {t("Browse files")}
+          <button type="button" disabled={loading} onClick={() => inputRef.current?.click()}>
+            {loading ? t("Processing image…") : t("Browse files")}
           </button>
         </div>
       )}

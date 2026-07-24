@@ -25,6 +25,7 @@ const zhHant: Record<string, string> = {
   About: "關於",
   "Device data": "裝置資料",
   Privacy: "隱私",
+  "Legal & data": "條款與資料",
   "Primary navigation": "主要導覽",
   "Processed locally in your browser": "只在瀏覽器本機處理",
   "Close menu": "關閉選單",
@@ -43,6 +44,7 @@ const zhHant: Record<string, string> = {
   "Drop an image here": "將圖片拖放到這裡",
   "PNG, JPEG, or WebP · up to 30 MB": "PNG、JPEG 或 WebP · 上限 30 MB",
   "Browse files": "瀏覽檔案",
+  "Processing image…": "正在處理圖片…",
   "Your image never leaves this browser.": "你的圖片不會離開這個瀏覽器。",
   "The image could not be loaded.": "無法載入圖片。",
   "The sample image could not be loaded. Upload your own PNG, JPEG, or WebP image.":
@@ -197,8 +199,54 @@ const zhHant: Record<string, string> = {
   "Image filename and file path": "圖片檔名與檔案路徑",
   "Transform and export operations": "構圖變換與匯出操作",
   "Stored preferences": "儲存的偏好設定",
-  "Only recent device identifiers may be stored locally. Uploaded images are held in memory and cleared when you leave or refresh.":
-    "本機只可能儲存最近使用的裝置識別碼；上傳圖片只保留在記憶體中，離開或重新整理後即會清除。",
+  "Wallpect stores only your selected language and up to four recent device identifiers in this browser. Uploaded images are held in memory, are never written to localStorage, and are cleared when replaced, refreshed, or closed.":
+    "Wallpect 只會在這個瀏覽器儲存你選擇的語言及最多四個最近使用的裝置識別碼。你選擇的圖片只保留在記憶體，不會寫入 localStorage，並會在更換圖片、重新整理或關閉頁面時清除。",
+  "Cookies, analytics, and cache": "Cookie、分析與快取",
+  "The Wallpect app does not set advertising cookies, load client-side analytics, create accounts, or send image data to a server. Public app assets may be cached by the browser for reliability; this cache does not contain your selected images.":
+    "Wallpect 應用程式不會設定廣告 Cookie、載入客戶端分析、建立帳戶或把圖片資料傳送到伺服器。瀏覽器可能為提升可靠性而快取公開的應用程式資源；該快取不包含你選擇的圖片。",
+  "Hosting network data": "託管網絡資料",
+  "Wallpect is hosted on Cloudflare. Requests for public site files pass through Cloudflare, which may process IP addresses, routing data, system configuration, and request metadata under its privacy policy. Selected image bytes are not part of those requests.":
+    "Wallpect 託管於 Cloudflare。對公開網站檔案的請求會經過 Cloudflare；Cloudflare 可能按其私隱政策處理 IP 位址、路由資料、系統設定及請求 metadata。你選擇的圖片 bytes 不會包含在這些請求內。",
+  "External links": "外部連結",
+  "External links leave Wallpect and are governed by the destination site's own terms and privacy practices.":
+    "外部連結會離開 Wallpect，並受目的地網站本身的條款及私隱做法規管。",
+  "Legal, privacy, and data use.": "條款、私隱與資料使用。",
+  "Plain-language terms, limitations, and source rules for using Wallpect.":
+    "以清晰文字說明 Wallpect 的使用條款、限制及資料來源規則。",
+  "Effective date: 25 July 2026": "生效日期：2026 年 7 月 25 日",
+  "Terms of use": "使用條款",
+  "By using Wallpect, you agree to use it lawfully and not to disrupt, bypass security controls, overload, or misuse the service. If you do not agree, do not use the service.":
+    "使用 Wallpect 即表示你同意合法使用本服務，不會干擾、規避安全控制、令服務過載或以其他方式濫用服務。如你不同意，請勿使用本服務。",
+  "Your images and rights": "你的圖片與權利",
+  "Your images remain under your control and are processed only in your browser. You are responsible for having permission to use, edit, and export any image you select.":
+    "你的圖片由你控制，並只在瀏覽器內處理。你有責任確保自己獲准使用、編輯及匯出所選圖片。",
+  "Accuracy and no warranty": "準確度與不作保證",
+  "Wallpect is a beta composition aid, provided as is and as available. Device profiles, safe areas, overlays, and export previews may be incomplete, approximate, outdated, or affected by operating-system settings. Check important output on the target device before relying on it.":
+    "Wallpect 是測試階段的構圖輔助工具，按現況及可用情況提供。裝置設定檔、安全區域、覆疊及匯出預覽可能不完整、屬概略、已過時或受作業系統設定影響。依賴重要輸出前，請先在目標裝置檢查。",
+  Liability: "責任限制",
+  "To the fullest extent permitted by applicable law, Wallpect's maintainers are not responsible for indirect, incidental, or consequential loss arising from use of, inability to use, or reliance on the service or linked information.":
+    "在適用法律允許的最大範圍內，Wallpect 維護者不會就使用、無法使用或依賴本服務或連結資料所引致的間接、附帶或相應損失負責。",
+  "Nothing in these terms excludes rights or liabilities that applicable law does not allow to be excluded or limited.":
+    "本條款不會排除或限制適用法律不容排除或限制的權利或責任。",
+  "Data sources and methodology": "資料來源與方法",
+  "Device names and hardware resolutions are manually curated from linked public manufacturer specification and support pages. Wallpect records a review date and accuracy level for each profile; safe areas, corner radii, cutouts, and system overlays may be measured, derived, or estimated rather than official.":
+    "裝置名稱及硬件解析度由連結的製造商公開規格及支援頁面人工整理。Wallpect 為每個設定檔記錄檢查日期及準確度等級；安全區域、圓角、開孔及系統覆疊可能來自量度、推算或估算，並非官方資料。",
+  "Wallpect does not use an Apple or third-party device-data API at runtime, and it does not reproduce Apple website text, product images, logos, or interface assets. Source links are references, not endorsements.":
+    "Wallpect 執行時不使用 Apple 或第三方裝置資料 API，亦不複製 Apple 網站文字、產品圖片、標誌或介面資產。來源連結只供參考，不代表任何背書。",
+  "Trademarks and independence": "商標與獨立性",
+  "Apple, iPhone, iPad, Mac, MacBook, iMac, and related names are trademarks of Apple Inc. They are used only to identify compatible device profiles. Wallpect is independent and is not authorized, sponsored, or endorsed by Apple Inc.":
+    "Apple、iPhone、iPad、Mac、MacBook、iMac 及相關名稱均為 Apple Inc. 的商標，只用於識別相容裝置設定檔。Wallpect 是獨立工具，未獲 Apple Inc. 授權、贊助或背書。",
+  "Third-party sites and changes": "第三方網站與變更",
+  "Linked sources may change or become unavailable and remain subject to their owners' terms. Wallpect's features, profiles, and notices may be updated; the effective date above identifies this version.":
+    "連結來源可能變更或停止提供，並繼續受其擁有者的條款規管。Wallpect 的功能、設定檔及聲明可能更新；以上生效日期用於識別目前版本。",
+  "Official reference links": "官方參考連結",
+  "Apple website terms": "Apple 網站使用條款",
+  "Apple trademark guidelines": "Apple 商標使用指引",
+  "Hong Kong privacy guidance": "香港私隱指引",
+  "Cloudflare privacy policy": "Cloudflare 私隱政策",
+  "Report a problem on GitHub": "在 GitHub 回報問題",
+  "This notice explains the current beta implementation and is general information, not legal advice.":
+    "本聲明用於說明目前測試版的實作，只屬一般資料，並非法律意見。",
   "Apple-first profiles included": "個以 Apple 為主的裝置設定檔",
   "Accuracy levels": "精確度等級",
   "Cross-checked with official specifications and measured data.":

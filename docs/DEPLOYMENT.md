@@ -5,7 +5,6 @@
 ### 專案設定
 
 ```text
-Project: wallpect
 Production branch: main
 Build command: npm run build
 Deploy command: npx wrangler deploy
@@ -95,7 +94,6 @@ PLAYWRIGHT_BASE_URL=https://<preview-url> npm run test:e2e
 ### Project settings
 
 ```text
-Project: wallpect
 Production branch: main
 Build command: npm run build
 Deploy command: npx wrangler deploy
