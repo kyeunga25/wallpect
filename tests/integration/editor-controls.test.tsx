@@ -21,9 +21,9 @@ describe("editor controls", () => {
     const user = userEvent.setup();
     renderWithEditor(<DeviceSelector />);
     await user.type(screen.getByPlaceholderText("搜尋型號、年份或解析度…"), "14 Pro");
-    const option = screen.getByRole("option", { name: /iPhone 14 Pro，2022/ });
+    const option = screen.getByRole("button", { name: /iPhone 14 Pro，2022/ });
     await user.click(option);
-    expect(option).toHaveAttribute("aria-selected", "true");
+    expect(option).toHaveAttribute("aria-pressed", "true");
   });
 
   it("filters devices by resolution and clears the search with Escape", async () => {
@@ -33,7 +33,7 @@ describe("editor controls", () => {
 
     await user.type(search, "1290");
     expect(screen.getByText("4 個結果")).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /iPhone 15 Pro Max，2023/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /iPhone 15 Pro Max，2023/ })).toBeInTheDocument();
 
     await user.type(search, "{Escape}");
     expect(search).toHaveValue("");
@@ -64,7 +64,7 @@ describe("editor controls", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Mac · 27" }));
-    await user.click(screen.getByRole("option", { name: /MacBook Neo，2026/ }));
+    await user.click(screen.getByRole("button", { name: /MacBook Neo，2026/ }));
 
     expect(container.querySelector(".laptop-base")).toBeInTheDocument();
     expect(container.querySelector(".computer-stand")).not.toBeInTheDocument();
