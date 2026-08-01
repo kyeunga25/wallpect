@@ -43,7 +43,7 @@ Wallpect 讓你按所選 Apple 裝置調整圖片構圖、檢查可能遮擋內�
 4. 調整構圖，並開啟需要檢查的輔助線。
 5. 選擇 PNG、JPEG 或 WebP，再按顯示的解析度匯出。
 
-圖片只會保存在瀏覽器記憶體，當圖片被取代、頁面重新整理或關閉時便會釋放。只有介面語言及最多四個最近使用的裝置識別碼會儲存在版本化 `localStorage`；公開網站檔案的正常請求仍會經過 Cloudflare，但不包含你選擇的圖片 bytes。
+圖片只會保存在瀏覽器記憶體，當圖片被取代、頁面重新整理或關閉時便會釋放。只有介面語言（`wallpect:locale:v1`）及最多四個最近使用的裝置識別碼（`wallpect:recent-devices:v1`）會儲存在版本化 `localStorage`；公開網站檔案的正常請求仍會經過 Cloudflare，但不包含你選擇的圖片 bytes。
 
 網站內可直接查閱繁中／英文的私隱、使用條款、免責及資料來源說明。維護與新增第三方來源／API 的規則記錄於 [條款、私隱與資料政策](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)。
 
@@ -73,7 +73,7 @@ npm ci
 npm run dev
 ```
 
-執行主要品質檢查：
+執行主要品質檢查；`npm run check` 包括 lint、單元／整合測試、strict production build 及 raw build size budget：
 
 ```bash
 npm run check
@@ -81,7 +81,7 @@ npm run format:check
 npm run worker:check
 ```
 
-Playwright 測試另外涵蓋 Chromium、WebKit、Microsoft Edge 及 Firefox：
+Playwright 會先 build，再在 `4174` 啟動 production-mode 本機 preview，並涵蓋 Chromium、WebKit、Microsoft Edge 及 Firefox：
 
 ```bash
 npm run test:e2e
@@ -108,9 +108,12 @@ Wallpect 以不含 Worker script 的 Cloudflare Workers Static Assets 模式部�
 
 預覽與匯出均會呼叫 `renderWallpaper`。平移值使用目標 Canvas 的標準化座標，因此縮小預覽與完整解析度匯出可保持相同構圖。
 
+完整 runtime 邊界、本機資料生命週期、偏好遷移、離線行為及驗證不變條件見[架構文件](docs/ARCHITECTURE.md)。
+
 ## 技術文件
 
 - [準確度政策](docs/ACCURACY_POLICY.md)
+- [架構文件](docs/ARCHITECTURE.md)
 - [裝置設定檔指南](docs/DEVICE_PROFILE_GUIDE.md)
 - [部署指南](docs/DEPLOYMENT.md)
 - [發布指南](docs/RELEASING.md)

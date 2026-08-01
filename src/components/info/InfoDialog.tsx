@@ -111,7 +111,7 @@ function DeviceContent({ count, t }: { count: number; t: Translate }) {
 function LegalContent({ t }: { t: Translate }) {
   return (
     <div className="dialog-body legal-sections">
-      <p className="legal-effective">{t("Effective date: 25 July 2026")}</p>
+      <p className="legal-effective">{t("Effective date: 2 August 2026")}</p>
       <section>
         <h3>{t("Terms of use")}</h3>
         <p>

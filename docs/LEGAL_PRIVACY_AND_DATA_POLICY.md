@@ -1,7 +1,7 @@
 # Wallpect 條款、私隱與資料政策
 
-生效日期：2026 年 7 月 25 日
-適用版本：0.2.2
+生效日期：2026 年 8 月 2 日
+適用版本：0.2.3
 
 > 本文件記錄 Wallpect 測試版目前的產品行為及維護規則，只屬一般資料，並非法律意見。若加入收費、帳戶、廣告、分析、個人資料表格、使用者內容託管或新司法管轄區，必須先接受獨立法律審閱。
 
@@ -16,15 +16,17 @@
 
 ## 2. 現行私隱資料清單
 
-| 資料／處理                                      | 位置                                 | 用途                         | 保留                               | 傳送對象                                               |
-| ----------------------------------------------- | ------------------------------------ | ---------------------------- | ---------------------------------- | ------------------------------------------------------ |
-| 使用者選擇的圖片 bytes、檔名、Canvas 像素及變換 | 瀏覽器記憶體                         | 預覽與匯出                   | 更換圖片、重新整理或關閉頁面時清除 | 不上傳；沒有圖片 API 或第三方圖片分析                  |
-| 語言偏好                                        | `localStorage`：`wallpect:locale:v1` | 還原介面語言                 | 直至使用者改寫或清除網站資料       | 不由應用程式傳送                                       |
-| 最多四個最近裝置 ID                             | `localStorage`：版本化 key           | 提供最近使用裝置捷徑         | 直至改寫或清除網站資料             | 不由應用程式傳送                                       |
-| 公開應用程式資源                                | Browser Cache／Service Worker Cache  | 提升載入可靠性               | 由版本化 cache 及瀏覽器政策管理    | 不包含使用者選擇的圖片                                 |
-| 一般網絡請求 metadata                           | Cloudflare 網絡                      | 傳送、保護及快取公開網站檔案 | 受 Cloudflare 服務及私隱政策規管   | Cloudflare；可能包括 IP、路由、系統設定及請求 metadata |
+| 資料／處理                                      | 位置                                         | 用途                         | 保留                               | 傳送對象                                               |
+| ----------------------------------------------- | -------------------------------------------- | ---------------------------- | ---------------------------------- | ------------------------------------------------------ |
+| 使用者選擇的圖片 bytes、檔名、Canvas 像素及變換 | 瀏覽器記憶體                                 | 預覽與匯出                   | 更換圖片、重新整理或關閉頁面時清除 | 不上傳；沒有圖片 API 或第三方圖片分析                  |
+| 語言偏好                                        | `localStorage`：`wallpect:locale:v1`         | 還原介面語言                 | 直至使用者改寫或清除網站資料       | 不由應用程式傳送                                       |
+| 最多四個最近裝置 ID                             | `localStorage`：`wallpect:recent-devices:v1` | 提供最近使用裝置捷徑         | 直至改寫或清除網站資料             | 不由應用程式傳送                                       |
+| 公開應用程式資源                                | Browser Cache／Service Worker Cache          | 提升載入可靠性               | 由版本化 cache 及瀏覽器政策管理    | 不包含使用者選擇的圖片                                 |
+| 一般網絡請求 metadata                           | Cloudflare 網絡                              | 傳送、保護及快取公開網站檔案 | 受 Cloudflare 服務及私隱政策規管   | Cloudflare；可能包括 IP、路由、系統設定及請求 metadata |
 
 Wallpect 前端不設定廣告 Cookie、不載入客戶端分析、不建立帳戶、不收集表格資料，也不把使用者選擇的圖片傳送到 Cloudflare。正常瀏覽公開網站仍會產生網絡請求；不應把「圖片不上傳」誤寫成「託管供應商完全不處理任何網絡資料」。
+
+0.2.3 會在首次讀取時把舊 `wallpect:recent-devices` 值限制為最多四個有效且不重複的裝置 ID，寫入 `wallpect:recent-devices:v1`，然後移除舊 key。遷移不會加入圖片、檔名、構圖或其他資料；若 storage 不可用，編輯器仍可運作而不保存偏好。
 
 參考：[香港私隱公署《擬備收集個人資料聲明及私隱政策聲明指引》](https://www.pcpd.org.hk/tc_chi/resources_centre/publications/files/GN_picspps_c.pdf)、[Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/)。
 
@@ -83,8 +85,8 @@ Apple 的香港網站條款限制複製、重新發佈、鏡像及自動擷取�
 
 # Wallpect Terms, Privacy, and Data Policy
 
-Effective date: 25 July 2026
-Applies to version: 0.2.2
+Effective date: 2 August 2026
+Applies to version: 0.2.3
 
 > This document records the current behavior and maintenance rules of the Wallpect beta. It is general information, not legal advice. Independent legal review is required before adding payments, accounts, advertising, analytics, personal-data forms, hosted user content, or new jurisdictions.
 
@@ -99,7 +101,9 @@ The user-facing version is available in the website's “Legal & data” dialog.
 
 ## 2. Current privacy inventory
 
-Wallpect keeps selected image bytes, filenames, Canvas pixels, and transforms in browser memory and does not upload them. It stores only the selected locale and up to four recent device identifiers in versioned `localStorage`. Public app assets may be cached for reliability, but these caches do not contain user-selected images.
+Wallpect keeps selected image bytes, filenames, Canvas pixels, and transforms in browser memory and does not upload them. It stores only the selected locale in `wallpect:locale:v1` and up to four recent device identifiers in `wallpect:recent-devices:v1`. Public app assets may be cached for reliability, but these caches do not contain user-selected images.
+
+On first read, version 0.2.3 sanitizes a legacy `wallpect:recent-devices` value to at most four valid, unique device IDs, writes the versioned key, and removes the legacy key. The migration adds no image, filename, composition, or other data. If storage is unavailable, the editor continues without persisting the preference.
 
 The site is hosted on Cloudflare. Requests for public files pass through Cloudflare, which may process IP addresses, routing data, system configuration, and request metadata under its privacy policy. The app itself does not load advertising cookies, client-side analytics, account systems, or personal-data forms.
 

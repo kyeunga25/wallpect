@@ -212,6 +212,7 @@ test("@desktop exposes accurate privacy, terms, disclaimer, and source notices",
   await expect(legalDialog.getByRole("heading", { name: "條款、私隱與資料使用。" })).toBeVisible();
   await expect(legalDialog.getByRole("heading", { name: "使用條款" })).toBeVisible();
   await expect(legalDialog.getByRole("heading", { name: "資料來源與方法" })).toBeVisible();
+  await expect(legalDialog).toContainText("生效日期：2026 年 8 月 2 日");
   await expect(legalDialog).toContainText("不使用 Apple 或第三方裝置資料 API");
   await expect(legalDialog).toContainText("並非法律意見");
   await expect(legalDialog.getByRole("link", { name: /Apple 網站使用條款/ })).toHaveAttribute(

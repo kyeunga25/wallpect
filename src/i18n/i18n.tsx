@@ -213,7 +213,7 @@ const zhHant: Record<string, string> = {
   "Legal, privacy, and data use.": "條款、私隱與資料使用。",
   "Plain-language terms, limitations, and source rules for using Wallpect.":
     "以清晰文字說明 Wallpect 的使用條款、限制及資料來源規則。",
-  "Effective date: 25 July 2026": "生效日期：2026 年 7 月 25 日",
+  "Effective date: 2 August 2026": "生效日期：2026 年 8 月 2 日",
   "Terms of use": "使用條款",
   "By using Wallpect, you agree to use it lawfully and not to disrupt, bypass security controls, overload, or misuse the service. If you do not agree, do not use the service.":
     "使用 Wallpect 即表示你同意合法使用本服務，不會干擾、規避安全控制、令服務過載或以其他方式濫用服務。如你不同意，請勿使用本服務。",
