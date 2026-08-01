@@ -4,6 +4,27 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-08-02
+
+### Added
+
+- Added a bilingual architecture document covering the browser-only boundary, data lifecycle, renderer invariants, offline model, and verification gates.
+- Added production-mode browser coverage for exact PNG/JPEG/WebP dimensions, zero post-upload HTTP(S) egress, Object URL cleanup, offline navigation, keyboard editing, dark OS preference stability, and every mobile editor panel.
+- Added raw build-size budgets and Chromium, WebKit, and Firefox jobs to GitHub CI; Microsoft Edge remains part of the complete local browser matrix.
+
+### Changed
+
+- Migrated recent-device preferences from `wallpect:recent-devices` to the sanitized, versioned `wallpect:recent-devices:v1` key.
+- Replaced simulated listbox options with native device-selection buttons and labelled every information dialog through its visible heading and introduction.
+- Fixed the accepted light-rail/dark-stage interface to a light browser color scheme so operating-system dark preference does not recolor native controls.
+- Updated service-worker installation and activation lifecycles, bypassed HTTP cache during update checks, and limited offline shell fallback to navigation requests.
+- Expanded the release process with explicit public-data review, fixed-SHA merge, deployed-asset byte comparison, and evidence requirements before tagging.
+
+### Security
+
+- Updated `minimatch` and `brace-expansion` in the development dependency lock to a patched release for CVE-2026-14257.
+- Confirmed zero known vulnerabilities in the complete and production npm dependency graphs at release preparation time.
+
 ## [0.2.2] - 2026-07-25
 
 ### Added
@@ -73,7 +94,8 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
 
-[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/kyeunga25/wallpect/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/kyeunga25/wallpect/releases/tag/v0.2.0

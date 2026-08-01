@@ -27,6 +27,11 @@ Object.defineProperty(globalThis.Image.prototype, "decode", {
   value: () => Promise.resolve(),
 });
 
+Object.defineProperty(globalThis.HTMLCanvasElement.prototype, "getContext", {
+  configurable: true,
+  value: () => null,
+});
+
 globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}

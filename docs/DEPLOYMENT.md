@@ -14,7 +14,7 @@ Node.js: 22 或以上版本
 
 Wallpect 使用 Workers Static Assets 的純靜態模式。`wrangler.toml` 不包含 `main` 或 `ASSETS` binding，因此請求不會執行 Worker script；圖片仍然只會在瀏覽器內解碼、預覽及匯出。`assets.not_found_handling` 明確設定為 `single-page-application`，讓非檔案導覽路徑回傳 `index.html`。
 
-Repository 亦包含鎖定版本的 Wrangler、`public/_headers` 與正式版本的 service worker。Vite 會為 JS／CSS 資源加入 hash；`_headers` 會長期快取這些不可變資源，同時讓 `index.html` 保持重新驗證，並避免長期快取 `sw.js`。
+Repository 亦包含鎖定版本的 Wrangler、`public/_headers` 與正式版本的 service worker。Vite 會為 JS／CSS 資源加入 hash；`_headers` 會長期快取這些不可變資源，同時讓 `index.html` 保持重新驗證，並避免長期快取 `sw.js`。註冊 service worker 時使用 `updateViaCache: "none"`；網絡失敗時只讓導覽請求回退到快取的 `/`，缺少的 JS、CSS 或其他非導覽檔案不會收到 HTML shell。
 
 本機驗證 Workers 靜態資源設定：
 
@@ -29,6 +29,8 @@ npm run worker:check
 npm run build
 npm run worker:dev
 ```
+
+`npm run test:e2e` 會自行建立 production build，並在 `127.0.0.1:4174` 啟動 Vite production preview，因此會實際註冊及檢查 service worker。不要以 Vite dev server 的結果代替離線／更新驗證。
 
 ### 網域
 
@@ -81,13 +83,14 @@ PLAYWRIGHT_BASE_URL=https://<preview-url> npm run test:e2e
 
 1. 首次開啟預設顯示繁體中文，並可切換簡體中文與英文；
 2. 內建示範圖片可正常渲染；
-3. 上傳圖片時沒有包含圖片 bytes 的網絡請求；
+3. 上傳圖片後沒有 HTTP(S) 請求，下載使用的 `blob:` URL 及上傳 Object URL 均會釋放；
 4. iPhone、iPad 與 Mac 設定檔可正確切換；
 5. PNG／JPEG／WebP 下載具有設定檔指定的精確尺寸；
 6. 桌面與流動版版面沒有水平溢出；
 7. 非檔案導覽路徑會回傳 SPA shell；
 8. 安全與快取 header 已正確提供；
 9. hashed JS／CSS 使用 immutable cache，而 `sw.js` 仍會重新驗證。
+10. 首次連線載入後，離線導覽可開啟 app shell；缺少的非導覽資源會失敗而不是回傳 `index.html`。
 
 ## English
 
@@ -103,7 +106,7 @@ Node.js: 22 or newer
 
 Wallpect uses the assets-only Workers Static Assets mode. `wrangler.toml` has no `main` entry or `ASSETS` binding, so requests do not invoke a Worker script; images remain decoded, previewed, and exported only in the browser. `assets.not_found_handling` is explicitly set to `single-page-application`, so navigation paths that do not match files receive `index.html`.
 
-The repository also includes a pinned Wrangler version, `public/_headers`, and a production service worker. Vite hashes JS/CSS assets; `_headers` caches those immutable assets for the long term while leaving `index.html` revalidated and preventing long-lived caching of `sw.js`.
+The repository also includes a pinned Wrangler version, `public/_headers`, and a production service worker. Vite hashes JS/CSS assets; `_headers` caches those immutable assets for the long term while leaving `index.html` revalidated and preventing long-lived caching of `sw.js`. Service-worker registration uses `updateViaCache: "none"`. On network failure, only navigation requests can fall back to cached `/`; a missing JS, CSS, or other non-navigation file does not receive the HTML shell.
 
 Validate the Workers static assets configuration locally:
 
@@ -118,6 +121,8 @@ Preview with the Workers runtime locally:
 npm run build
 npm run worker:dev
 ```
+
+`npm run test:e2e` creates a production build and starts a Vite production preview at `127.0.0.1:4174`, so it exercises the real service-worker registration and offline behavior. Do not substitute Vite dev-server results for offline/update verification.
 
 ### Domains
 
@@ -170,10 +175,11 @@ Then verify on the deployed URL:
 
 1. the first visit defaults to Traditional Chinese and can switch to Simplified Chinese or English;
 2. the bundled demo renders;
-3. an uploaded image produces no network request containing image bytes;
+3. no HTTP(S) request occurs after an image upload, and upload/download Object URLs are released;
 4. iPhone, iPad, and Mac profiles switch correctly;
 5. PNG/JPEG/WebP downloads have exact profile dimensions;
 6. desktop and mobile layouts have no horizontal overflow;
 7. non-file navigation paths return the SPA shell;
 8. security and cache headers are present;
 9. hashed JS/CSS uses immutable caching while `sw.js` remains revalidated.
+10. after an initial online load, offline navigation opens the app shell while a missing non-navigation asset fails instead of receiving `index.html`.

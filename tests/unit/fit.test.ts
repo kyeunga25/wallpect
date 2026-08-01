@@ -18,13 +18,17 @@ describe("wallpaper fit calculations", () => {
   });
 
   it("uses normalized translation for preview/export parity", () => {
-    const geometry = calculateRenderGeometry(1000, 1000, 100, 200, {
+    const transform = {
       ...DEFAULT_TRANSFORM,
       translateX: 0.1,
       translateY: -0.25,
-    });
-    expect(geometry.centerX).toBe(60);
-    expect(geometry.centerY).toBe(50);
+    };
+    const preview = calculateRenderGeometry(1000, 1000, 393, 852, transform);
+    const output = calculateRenderGeometry(1000, 1000, 1179, 2556, transform);
+    expect(output.centerX / preview.centerX).toBeCloseTo(3);
+    expect(output.centerY / preview.centerY).toBeCloseTo(3);
+    expect(output.renderedWidth / preview.renderedWidth).toBeCloseTo(3);
+    expect(output.renderedHeight / preview.renderedHeight).toBeCloseTo(3);
   });
 
   it("reports crop percentage and clamps unsafe transforms", () => {

@@ -1,5 +1,5 @@
 import { Database, ExternalLink, Scale, ShieldCheck, Target, X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { useI18n } from "../../i18n/i18n";
 import { useEditor } from "../../state/editor-context";
 import type { InfoView } from "../header/Header";
@@ -111,7 +111,7 @@ function DeviceContent({ count, t }: { count: number; t: Translate }) {
 function LegalContent({ t }: { t: Translate }) {
   return (
     <div className="dialog-body legal-sections">
-      <p className="legal-effective">{t("Effective date: 25 July 2026")}</p>
+      <p className="legal-effective">{t("Effective date: 2 August 2026")}</p>
       <section>
         <h3>{t("Terms of use")}</h3>
         <p>
@@ -223,6 +223,8 @@ function LegalContent({ t }: { t: Translate }) {
 export function InfoDialog({ view, onClose }: { view: InfoView; onClose: () => void }) {
   const { t } = useI18n();
   const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const introId = useId();
   const { profiles } = useEditor();
   useEffect(() => {
     const dialog = ref.current;
@@ -233,13 +235,21 @@ export function InfoDialog({ view, onClose }: { view: InfoView; onClose: () => v
   const item = copy[view];
   const Icon = item.icon;
   return (
-    <dialog ref={ref} className="info-dialog" onClose={onClose}>
+    <dialog
+      ref={ref}
+      className="info-dialog"
+      aria-labelledby={titleId}
+      aria-describedby={introId}
+      onClose={onClose}
+    >
       <button className="dialog-close" type="button" aria-label={t("Close")} onClick={onClose}>
         <X />
       </button>
       <Icon className="dialog-icon" />
-      <h2>{t(item.title)}</h2>
-      <p className="dialog-intro">{t(item.intro)}</p>
+      <h2 id={titleId}>{t(item.title)}</h2>
+      <p id={introId} className="dialog-intro">
+        {t(item.intro)}
+      </p>
       {view === "about" ? (
         <div className="dialog-grid">
           <div>

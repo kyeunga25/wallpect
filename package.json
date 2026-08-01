@@ -1,7 +1,7 @@
 {
   "name": "wallpect",
   "private": true,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Privacy-first wallpaper preview and fitting tool for Apple devices.",
   "license": "MIT",
   "homepage": "https://wallpect.k-y.cc",
@@ -26,7 +26,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "npm run lint && npm test && npm run build",
+    "performance:check": "node scripts/check-build-budget.mjs",
+    "check": "npm run lint && npm test && npm run build && npm run performance:check",
     "worker:dev": "wrangler dev",
     "worker:check": "wrangler deploy --dry-run",
     "worker:preview": "wrangler versions upload",

@@ -48,7 +48,7 @@ export function DeviceSelector() {
   const initialGroup = groupForProfile(profile);
   const [group, setGroup] = useState<DeviceGroup>(initialGroup);
   const [query, setQuery] = useState("");
-  const listRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const resultCountId = useId();
   const groupCounts = useMemo(
     () => ({
@@ -78,7 +78,7 @@ export function DeviceSelector() {
 
   useLayoutEffect(() => {
     const list = listRef.current;
-    const selected = list?.querySelector<HTMLElement>('[aria-selected="true"]');
+    const selected = list?.querySelector<HTMLElement>('[aria-pressed="true"]');
     if (!list || !selected || query) return;
     const selectedTopWithinList = selected.offsetTop - list.offsetTop;
     list.scrollTop = Math.max(0, selectedTopWithinList - 4);
@@ -157,57 +157,52 @@ export function DeviceSelector() {
           {t("{count} results", { count: filtered.length })}
         </span>
       </div>
-      <div
-        ref={listRef}
-        className="device-list"
-        role="listbox"
-        aria-label={t("{group} models", { group })}
-      >
+      <ul ref={listRef} className="device-list" aria-label={t("{group} models", { group })}>
         {filtered.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            role="option"
-            aria-label={t("{model}, {year}, {width} by {height}", {
-              model: item.model,
-              year: item.releaseYear,
-              width: item.display.physicalWidthPx,
-              height: item.display.physicalHeightPx,
-            })}
-            aria-selected={item.id === deviceId}
-            className={item.id === deviceId ? "device-option is-selected" : "device-option"}
-            onClick={() => setDeviceId(item.id)}
-          >
-            <span className="device-icon">
-              <DeviceGlyph group={group} />
-            </span>
-            <span>
-              <strong>{item.model}</strong>
-              <small>
-                {item.releaseYear} · {item.chassis.screenDiagonalInches}″ ·{" "}
-                {item.display.physicalWidthPx} × {item.display.physicalHeightPx}
-              </small>
-            </span>
-            {item.id === deviceId ? (
-              <Check className="selected-check" aria-hidden="true" />
-            ) : (
-              <em className={`accuracy-badge ${item.metadata.accuracy}`}>
-                {t(item.metadata.accuracy[0].toUpperCase() + item.metadata.accuracy.slice(1))}
-              </em>
-            )}
-          </button>
+          <li key={item.id}>
+            <button
+              type="button"
+              aria-label={t("{model}, {year}, {width} by {height}", {
+                model: item.model,
+                year: item.releaseYear,
+                width: item.display.physicalWidthPx,
+                height: item.display.physicalHeightPx,
+              })}
+              aria-pressed={item.id === deviceId}
+              className={item.id === deviceId ? "device-option is-selected" : "device-option"}
+              onClick={() => setDeviceId(item.id)}
+            >
+              <span className="device-icon">
+                <DeviceGlyph group={group} />
+              </span>
+              <span>
+                <strong>{item.model}</strong>
+                <small>
+                  {item.releaseYear} · {item.chassis.screenDiagonalInches}″ ·{" "}
+                  {item.display.physicalWidthPx} × {item.display.physicalHeightPx}
+                </small>
+              </span>
+              {item.id === deviceId ? (
+                <Check className="selected-check" aria-hidden="true" />
+              ) : (
+                <em className={`accuracy-badge ${item.metadata.accuracy}`}>
+                  {t(item.metadata.accuracy[0].toUpperCase() + item.metadata.accuracy.slice(1))}
+                </em>
+              )}
+            </button>
+          </li>
         ))}
         {!filtered.length ? (
-          <div className="empty-list">
+          <li className="empty-list">
             <p>{t("No matching devices.")}</p>
             {query ? (
               <button type="button" onClick={() => setQuery("")}>
                 {t("Clear search")}
               </button>
             ) : null}
-          </div>
+          </li>
         ) : null}
-      </div>
+      </ul>
       {profile.supportedOrientations.length > 1 ? (
         <div className="orientation-row">
           <span>{t("Orientation")}</span>

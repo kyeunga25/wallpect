@@ -43,7 +43,7 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 4. Adjust the composition and enable the guides you want to inspect.
 5. Choose PNG, JPEG, or WebP and export at the displayed resolution.
 
-Your image stays in browser memory and is released when it is replaced, the page is refreshed, or the page is closed. Only the selected locale and up to four recent device identifiers are saved in versioned `localStorage`. Normal requests for public site files still pass through Cloudflare, but they do not contain your selected image bytes.
+Your image stays in browser memory and is released when it is replaced, the page is refreshed, or the page is closed. Only the selected locale (`wallpect:locale:v1`) and up to four recent device identifiers (`wallpect:recent-devices:v1`) are saved in versioned `localStorage`. Normal requests for public site files still pass through Cloudflare, but they do not contain your selected image bytes.
 
 The website provides directly accessible Traditional Chinese and English privacy, terms, disclaimer, and data-source notices. Maintenance and third-party source/API rules are documented in the [Terms, Privacy, and Data Policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md).
 
@@ -73,7 +73,7 @@ npm ci
 npm run dev
 ```
 
-Run the core quality checks:
+Run the core quality checks. `npm run check` includes lint, unit/integration tests, a strict production build, and the raw build-size budget:
 
 ```bash
 npm run check
@@ -81,7 +81,7 @@ npm run format:check
 npm run worker:check
 ```
 
-The Playwright suite additionally covers Chromium, WebKit, Microsoft Edge, and Firefox:
+The Playwright suite builds the app and starts a production-mode local preview on port `4174`. It covers Chromium, WebKit, Microsoft Edge, and Firefox:
 
 ```bash
 npm run test:e2e
@@ -108,9 +108,12 @@ See the [deployment guide](docs/DEPLOYMENT.md) for platform settings and the [re
 
 Preview and export both call `renderWallpaper`. Pan offsets use the target canvas's normalized coordinate space, so a scaled preview and full-resolution export preserve the same composition.
 
+See the [architecture document](docs/ARCHITECTURE.md) for the runtime boundary, local-data lifecycle, storage migration, offline behavior, and verification invariants.
+
 ## Documentation
 
 - [Accuracy policy](docs/ACCURACY_POLICY.md)
+- [Architecture](docs/ARCHITECTURE.md)
 - [Device profile guide](docs/DEVICE_PROFILE_GUIDE.md)
 - [Deployment guide](docs/DEPLOYMENT.md)
 - [Release guide](docs/RELEASING.md)

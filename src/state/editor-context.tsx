@@ -12,6 +12,7 @@ import {
 import { deviceProfiles, getDeviceProfile } from "../data/devices";
 import { generateFilename } from "../core/export";
 import { decodeBundledImage } from "../core/image-decoder";
+import { loadRecentDeviceIds, saveRecentDeviceIds } from "../core/preferences";
 import { orientDevice } from "../core/transforms";
 import { useI18n } from "../i18n/i18n";
 import type { DeviceProfile, Orientation, OrientedDevice } from "../types/device";
@@ -62,6 +63,7 @@ type EditorContextValue = {
 };
 
 const EditorContext = createContext<EditorContextValue | null>(null);
+const validDeviceIds = new Set(deviceProfiles.map((profile) => profile.id));
 
 function transformKey(deviceId: string, orientation: Orientation) {
   return `${deviceId}:${orientation}`;
@@ -81,13 +83,9 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [overlays, setOverlays] = useState(DEFAULT_OVERLAYS);
   const [mobileTab, setMobileTab] = useState<MobileTab>("device");
   const [announcement, setAnnouncement] = useState("");
-  const [recentDeviceIds, setRecentDeviceIds] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem("wallpect:recent-devices") ?? "[]") as string[];
-    } catch {
-      return [];
-    }
-  });
+  const [recentDeviceIds, setRecentDeviceIds] = useState<string[]>(() =>
+    loadRecentDeviceIds(localStorage, validDeviceIds),
+  );
   const orientedDevice = useMemo(() => orientDevice(profile, orientation), [orientation, profile]);
   const key = transformKey(deviceId, orientation);
   const transform = transforms[key] ?? DEFAULT_TRANSFORM;
@@ -145,12 +143,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
       setAnnouncement(t("{model} selected.", { model: next.model }));
       setRecentDeviceIds((current) => {
         const updated = [next.id, ...current.filter((item) => item !== next.id)].slice(0, 4);
-        try {
-          localStorage.setItem("wallpect:recent-devices", JSON.stringify(updated));
-        } catch {
-          // Local storage is optional; editor behavior does not depend on it.
-        }
-        return updated;
+        return saveRecentDeviceIds(localStorage, updated, validDeviceIds);
       });
     },
     [t],
