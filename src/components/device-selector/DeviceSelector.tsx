@@ -1,5 +1,10 @@
 import { Check, Monitor, Search, Smartphone, Tablet, X } from "lucide-react";
 import { useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  getDeviceDiagonalLabel,
+  getDeviceReleaseYearLabel,
+  getDeviceSearchText,
+} from "../../data/devices";
 import { useEditor } from "../../state/editor-context";
 import { useI18n } from "../../i18n/i18n";
 import type { DeviceProfile } from "../../types/device";
@@ -18,21 +23,6 @@ function groupForProfile(profile: DeviceProfile): DeviceGroup {
   if (profile.category === "iphone") return "iphone";
   if (profile.category === "ipad") return "ipad";
   return "mac";
-}
-
-function searchableDeviceText(profile: DeviceProfile) {
-  const { display } = profile;
-  return [
-    profile.model,
-    profile.releaseYear,
-    display.physicalWidthPx,
-    display.physicalHeightPx,
-    display.logicalWidthPt,
-    display.logicalHeightPt,
-    profile.chassis.screenDiagonalInches,
-  ]
-    .join(" ")
-    .toLowerCase();
 }
 
 function DeviceGlyph({ group }: { group: DeviceGroup }) {
@@ -64,7 +54,7 @@ export function DeviceSelector() {
       .filter(
         (item) =>
           belongs(item, group) &&
-          (!normalizedQuery || searchableDeviceText(item).includes(normalizedQuery)),
+          (!normalizedQuery || getDeviceSearchText(item).includes(normalizedQuery)),
       )
       .sort((a, b) => b.releaseYear - a.releaseYear);
   }, [group, profiles, query]);
@@ -152,46 +142,53 @@ export function DeviceSelector() {
         </div>
       ) : null}
       <div className="device-list-heading">
-        <strong>{t("Available models")}</strong>
+        <strong>{t("Available configurations")}</strong>
         <span id={resultCountId} aria-live="polite">
           {t("{count} results", { count: filtered.length })}
         </span>
       </div>
       <ul ref={listRef} className="device-list" aria-label={t("{group} models", { group })}>
-        {filtered.map((item) => (
-          <li key={item.id}>
-            <button
-              type="button"
-              aria-label={t("{model}, {year}, {width} by {height}", {
-                model: item.model,
-                year: item.releaseYear,
-                width: item.display.physicalWidthPx,
-                height: item.display.physicalHeightPx,
-              })}
-              aria-pressed={item.id === deviceId}
-              className={item.id === deviceId ? "device-option is-selected" : "device-option"}
-              onClick={() => setDeviceId(item.id)}
-            >
-              <span className="device-icon">
-                <DeviceGlyph group={group} />
-              </span>
-              <span>
-                <strong>{item.model}</strong>
-                <small>
-                  {item.releaseYear} · {item.chassis.screenDiagonalInches}″ ·{" "}
-                  {item.display.physicalWidthPx} × {item.display.physicalHeightPx}
-                </small>
-              </span>
-              {item.id === deviceId ? (
-                <Check className="selected-check" aria-hidden="true" />
-              ) : (
-                <em className={`accuracy-badge ${item.metadata.accuracy}`}>
-                  {t(item.metadata.accuracy[0].toUpperCase() + item.metadata.accuracy.slice(1))}
-                </em>
-              )}
-            </button>
-          </li>
-        ))}
+        {filtered.map((item) => {
+          const releaseYears = getDeviceReleaseYearLabel(item);
+          return (
+            <li key={item.id}>
+              <button
+                type="button"
+                aria-label={t("{model}, {year}, {width} by {height}", {
+                  model: item.model,
+                  year: releaseYears,
+                  width: item.display.physicalWidthPx,
+                  height: item.display.physicalHeightPx,
+                })}
+                aria-pressed={item.id === deviceId}
+                className={item.id === deviceId ? "device-option is-selected" : "device-option"}
+                onClick={() => setDeviceId(item.id)}
+              >
+                <span className="device-icon">
+                  <DeviceGlyph group={group} />
+                </span>
+                <span>
+                  <strong>{item.model}</strong>
+                  <small>
+                    {releaseYears}
+                    {item.compatibleModels.length > 1
+                      ? ` · ${t("{count} models", { count: item.compatibleModels.length })}`
+                      : ""}
+                    {` · ${getDeviceDiagonalLabel(item)} · `}
+                    {item.display.physicalWidthPx} × {item.display.physicalHeightPx}
+                  </small>
+                </span>
+                {item.id === deviceId ? (
+                  <Check className="selected-check" aria-hidden="true" />
+                ) : (
+                  <em className={`accuracy-badge ${item.metadata.accuracy}`}>
+                    {t(item.metadata.accuracy[0].toUpperCase() + item.metadata.accuracy.slice(1))}
+                  </em>
+                )}
+              </button>
+            </li>
+          );
+        })}
         {!filtered.length ? (
           <li className="empty-list">
             <p>{t("No matching devices.")}</p>

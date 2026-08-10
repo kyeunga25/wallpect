@@ -14,6 +14,7 @@
 - 預覽與匯出必須共用相同的變換及渲染計算。
 - 持久偏好必須使用版本化 key 及明確遷移；目前只允許 `wallpect:locale:v1` 與 `wallpect:recent-devices:v1`。
 - 裝置資料必須位於 `src/data/devices`，不要寫入 UI 元件。
+- 只有 wallpaper 畫布、開孔、安全區域及覆疊幾何完全相同的型號才可合併；相同解析度但遮擋不同時必須分開。
 - 推算或估算的設定檔資料不得標示為 `verified`。
 
 ### 開發流程
@@ -61,6 +62,7 @@ Thank you for helping improve Wallpect. Keep each issue or pull request focused 
 - Preview and export must share the same transform and rendering calculations.
 - Persistent preferences require a versioned key and explicit migration. The only current keys are `wallpect:locale:v1` and `wallpect:recent-devices:v1`.
 - Keep device data in `src/data/devices`, outside UI components.
+- Consolidate models only when their wallpaper canvas, cutout, safe area, and overlay geometry all match; equal resolution with different obstructions must remain separate.
 - Never label derived or estimated profile data as `verified`.
 
 ### Development workflow

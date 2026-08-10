@@ -9,7 +9,13 @@ import {
   type ReactNode,
   type SetStateAction,
 } from "react";
-import { deviceProfiles, getDeviceProfile } from "../data/devices";
+import {
+  defaultDeviceProfileId,
+  deviceProfiles,
+  getDeviceProfile,
+  getKnownDeviceProfileIds,
+  normalizeDeviceProfileId,
+} from "../data/devices";
 import { generateFilename } from "../core/export";
 import { decodeBundledImage } from "../core/image-decoder";
 import { loadRecentDeviceIds, saveRecentDeviceIds } from "../core/preferences";
@@ -64,6 +70,15 @@ type EditorContextValue = {
 
 const EditorContext = createContext<EditorContextValue | null>(null);
 const validDeviceIds = new Set(deviceProfiles.map((profile) => profile.id));
+const knownDeviceIds = getKnownDeviceProfileIds();
+
+function loadCanonicalRecentDeviceIds() {
+  const loaded = loadRecentDeviceIds(localStorage, knownDeviceIds);
+  const canonical = loaded
+    .map(normalizeDeviceProfileId)
+    .filter((id, index, values) => validDeviceIds.has(id) && values.indexOf(id) === index);
+  return saveRecentDeviceIds(localStorage, canonical, validDeviceIds);
+}
 
 function transformKey(deviceId: string, orientation: Orientation) {
   return `${deviceId}:${orientation}`;
@@ -71,7 +86,7 @@ function transformKey(deviceId: string, orientation: Orientation) {
 
 export function EditorProvider({ children }: { children: ReactNode }) {
   const { t } = useI18n();
-  const [deviceId, setDeviceIdState] = useState("apple-iphone-15-pro");
+  const [deviceId, setDeviceIdState] = useState(defaultDeviceProfileId);
   const profile = useMemo(() => getDeviceProfile(deviceId), [deviceId]);
   const [orientation, setOrientationState] = useState<Orientation>(profile.display.orientation);
   const [image, setImage] = useState<ImageAsset | null>(null);
@@ -83,9 +98,7 @@ export function EditorProvider({ children }: { children: ReactNode }) {
   const [overlays, setOverlays] = useState(DEFAULT_OVERLAYS);
   const [mobileTab, setMobileTab] = useState<MobileTab>("device");
   const [announcement, setAnnouncement] = useState("");
-  const [recentDeviceIds, setRecentDeviceIds] = useState<string[]>(() =>
-    loadRecentDeviceIds(localStorage, validDeviceIds),
-  );
+  const [recentDeviceIds, setRecentDeviceIds] = useState<string[]>(loadCanonicalRecentDeviceIds);
   const orientedDevice = useMemo(() => orientDevice(profile, orientation), [orientation, profile]);
   const key = transformKey(deviceId, orientation);
   const transform = transforms[key] ?? DEFAULT_TRANSFORM;

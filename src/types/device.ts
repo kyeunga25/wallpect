@@ -16,6 +16,12 @@ export interface Rect {
   height: number;
 }
 
+export interface CompatibleDeviceModel {
+  name: string;
+  releaseYear: number;
+  screenDiagonalInches: number;
+}
+
 export interface DeviceProfile {
   id: string;
   brand: "Apple";
@@ -25,6 +31,7 @@ export interface DeviceProfile {
   model: string;
   slug: string;
   releaseYear: number;
+  compatibleModels: CompatibleDeviceModel[];
   supportedOrientations: Orientation[];
   chassis: {
     physicalWidthMm: number;

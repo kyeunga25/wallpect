@@ -79,12 +79,26 @@ function PrivacyContent({ t }: { t: Translate }) {
   );
 }
 
-function DeviceContent({ count, t }: { count: number; t: Translate }) {
+function DeviceContent({
+  profileCount,
+  modelCount,
+  t,
+}: {
+  profileCount: number;
+  modelCount: number;
+  t: Translate;
+}) {
   return (
     <div className="dialog-body">
-      <div className="data-count">
-        <strong>{count}</strong>
-        <span>{t("Apple-first profiles included")}</span>
+      <div className="data-counts">
+        <div className="data-count">
+          <strong>{profileCount}</strong>
+          <span>{t("Consolidated preview configurations")}</span>
+        </div>
+        <div className="data-count">
+          <strong>{modelCount}</strong>
+          <span>{t("Named Apple models covered")}</span>
+        </div>
       </div>
       <h3>{t("Accuracy levels")}</h3>
       <dl className="accuracy-list">
@@ -111,7 +125,7 @@ function DeviceContent({ count, t }: { count: number; t: Translate }) {
 function LegalContent({ t }: { t: Translate }) {
   return (
     <div className="dialog-body legal-sections">
-      <p className="legal-effective">{t("Effective date: 2 August 2026")}</p>
+      <p className="legal-effective">{t("Effective date: 10 August 2026")}</p>
       <section>
         <h3>{t("Terms of use")}</h3>
         <p>
@@ -184,25 +198,18 @@ function LegalContent({ t }: { t: Translate }) {
           {t("Apple technical specifications")} <ExternalLink />
         </a>
         <a
-          href="https://www.apple.com/hk/legal/internet-services/terms/site.html"
+          href="https://www.apple.com/legal/internet-services/terms/site.html"
           target="_blank"
           rel="noreferrer"
         >
           {t("Apple website terms")} <ExternalLink />
         </a>
         <a
-          href="https://www.apple.com/hk/legal/intellectual-property/guidelinesfor3rdparties.html"
+          href="https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html"
           target="_blank"
           rel="noreferrer"
         >
           {t("Apple trademark guidelines")} <ExternalLink />
-        </a>
-        <a
-          href="https://www.pcpd.org.hk/tc_chi/resources_centre/publications/files/GN_picspps_c.pdf"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {t("Hong Kong privacy guidance")} <ExternalLink />
         </a>
         <a href="https://www.cloudflare.com/policies/privacy/" target="_blank" rel="noreferrer">
           {t("Cloudflare privacy policy")} <ExternalLink />
@@ -226,6 +233,10 @@ export function InfoDialog({ view, onClose }: { view: InfoView; onClose: () => v
   const titleId = useId();
   const introId = useId();
   const { profiles } = useEditor();
+  const modelCount = profiles.reduce(
+    (count, profile) => count + profile.compatibleModels.length,
+    0,
+  );
   useEffect(() => {
     const dialog = ref.current;
     if (view && dialog && !dialog.open) dialog.showModal();
@@ -267,7 +278,9 @@ export function InfoDialog({ view, onClose }: { view: InfoView; onClose: () => v
         </div>
       ) : null}
       {view === "privacy" ? <PrivacyContent t={t} /> : null}
-      {view === "devices" ? <DeviceContent count={profiles.length} t={t} /> : null}
+      {view === "devices" ? (
+        <DeviceContent profileCount={profiles.length} modelCount={modelCount} t={t} />
+      ) : null}
       {view === "legal" ? <LegalContent t={t} /> : null}
       <p className="legal-note">
         {t("Wallpect is independent and is not affiliated with or endorsed by Apple Inc.")}

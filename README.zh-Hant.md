@@ -15,7 +15,7 @@
 
 ![Wallpect 桌面工作區，顯示 iPhone 桌布預覽及匯出控制](docs/screenshots/wallpect-desktop.png)
 
-Wallpect 讓你按所選 Apple 裝置調整圖片構圖、檢查可能遮擋內容的系統介面，並以設定檔的精確像素尺寸匯出桌布。圖片解碼、編輯、預覽及匯出全部在瀏覽器內完成；沒有圖片上傳端點、帳戶系統或第三方圖片分析。
+Wallpect 讓你按所選 Apple 裝置調整圖片構圖、檢查可能遮擋內容的系統介面，並以設定檔的精確像素尺寸匯出桌布。正式版本以純 Static Assets 模式部署在 Cloudflare Workers。圖片解碼、編輯、預覽及匯出全部在瀏覽器內完成；沒有圖片上傳端點、帳戶系統、資料庫或第三方圖片分析。
 
 ## 可以做甚麼
 
@@ -25,7 +25,8 @@ Wallpect 讓你按所選 Apple 裝置調整圖片構圖、檢查可能遮擋內�
 
 ### 主要功能
 
-- 74 個設定檔：27 個 iPhone、20 個 iPad，以及 27 個 Mac／顯示器，涵蓋 2021 年至 2026 年 7 月要求支援的所有顯示系列
+- 47 個不重複的畫布配置：19 個 iPhone、11 個 iPad、17 個 Mac／Apple 顯示器配置，共覆蓋 191 個 2007–2026 年具名型號
+- 相同 wallpaper 畫布及遮擋幾何的裝置共用一個選項；所有型號名稱、年份、吋數及解析度仍可搜尋
 - 在本機解碼 PNG、JPEG 與 WebP，限制為 30 MB、最長邊 12,000 px 及 7,200 萬像素
 - 每部裝置分別保存直向及橫向構圖
 - 純色、透明或模糊延伸背景
@@ -62,6 +63,20 @@ Wallpect 將公開的顯示資料與需要量度或推算的幾何資料分開�
 
 完整定義及資料問題回報要求請參閱[準確度政策](docs/ACCURACY_POLICY.md)。
 
+## 技術棧
+
+| 層面           | 技術                                                  | 用途                                      |
+| -------------- | ----------------------------------------------------- | ----------------------------------------- |
+| 介面與應用程式 | React 19、strict TypeScript 5、Vite 8                 | 編譯成靜態資源、具型別檢查的單頁應用程式  |
+| 瀏覽器圖片處理 | Canvas 2D、File／Blob API、Object URL                 | 在本機解碼、構圖、預覽及匯出              |
+| 介面圖示       | Lucide React                                          | 開源介面圖示                              |
+| 託管           | Cloudflare Workers Static Assets、Wrangler 4          | 純靜態邊緣傳送、SPA fallback、預覽及部署  |
+| 離線 app shell | Service Worker、Cache Storage                         | 首次連線載入後提供同源 app shell fallback |
+| 品質檢查       | ESLint、Prettier、Vitest、Testing Library、Playwright | 靜態、單元、整合及瀏覽器測試              |
+| 自動化         | GitHub Actions、Cloudflare Workers Builds             | 唯讀 CI 檢查、分支預覽及正式 build        |
+
+目前部署不包含 SSR、Worker request handler、runtime API、身份驗證、分析服務、資料庫、物件儲存 binding 或執行時 AI 模型。精確依賴版本鎖定在 [`package-lock.json`](package-lock.json)，而 [`package.json`](package.json) 是 scripts 及直接依賴的可讀來源。
+
 ## 本機開發
 
 需求：Node.js 22 或更新版本，以及 npm。
@@ -89,11 +104,37 @@ npm run test:e2e
 
 設定 `PLAYWRIGHT_BASE_URL` 後，可對已部署的 Workers 預覽版本或正式網站執行相同的瀏覽器矩陣。
 
-## 部署與版本發布
+## 部署、自行託管與版本發布
 
 Wallpect 以不含 Worker script 的 Cloudflare Workers Static Assets 模式部署，並由 Worker 以 Custom Domain 直接管理 `wallpect.k-y.cc`。推送至 `main` 會觸發正式 Workers Build；其他分支只會建立預覽版本，不會改變正式流量。正式回退使用 Workers 版本記錄，不再需要 Cloudflare Pages 專案。
 
-平台設定請參閱[部署指南](docs/DEPLOYMENT.md)；版本、驗證、預覽、正式部署及回退程序請參閱[發布指南](docs/RELEASING.md)。
+你可以把 fork 自行部署到自己的 Cloudflare 帳戶；目前不需要資料庫、儲存 binding、AI key 或執行時 secret：
+
+1. Fork 或 clone repository，並安裝 Node.js 22 或更新版本。
+2. 首次部署前修改 `wrangler.toml`：在自己的帳戶選用 Worker `name`；如只使用 `workers.dev`，移除 repository 內原有的 `[[routes]]`，否則把它改成自己控制的 Custom Domain。
+3. 安裝並驗證鎖定版本：
+
+   ```bash
+   npm ci
+   npm run check
+   npm run format:check
+   npm run worker:check
+   ```
+
+4. 在本機登入並部署靜態 build：
+
+   ```bash
+   npx wrangler login
+   npm run worker:deploy
+   ```
+
+5. 對 Wrangler 回傳的 URL 執行瀏覽器測試：
+
+   ```bash
+   PLAYWRIGHT_BASE_URL=https://<your-worker-url> npm run test:e2e
+   ```
+
+Wrangler 憑證應保留在 repository 之外。不要把 API token、帳戶／zone 識別碼、deployment ID、私人網域、正式數據、本機路徑、log，或含私人內容的截圖加入版本控制。[部署與自行託管指南](docs/DEPLOYMENT.md)提供安全設定範本、Workers Builds、Custom Domain、部署驗證及回退步驟；[發布指南](docs/RELEASING.md)則說明版本化發布流程。
 
 ## 架構
 
@@ -115,7 +156,7 @@ Wallpect 以不含 Worker script 的 Cloudflare Workers Static Assets 模式部�
 - [準確度政策](docs/ACCURACY_POLICY.md)
 - [架構文件](docs/ARCHITECTURE.md)
 - [裝置設定檔指南](docs/DEVICE_PROFILE_GUIDE.md)
-- [部署指南](docs/DEPLOYMENT.md)
+- [部署與自行託管指南](docs/DEPLOYMENT.md)
 - [發布指南](docs/RELEASING.md)
 - [條款、私隱與資料政策](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)
 - [版本記錄](CHANGELOG.md)
@@ -131,3 +172,10 @@ Wallpect 採用 [MIT License](LICENSE)。
 Wallpect 是獨立工具，與 Apple Inc. 無關，亦未獲其背書。Apple 產品名稱只用於識別相容的裝置設定檔。
 
 裝置規格由連結的公開製造商支援頁面人工整理；Wallpect 不會在執行時使用 Apple 或第三方裝置資料 API，也不會自動擷取或鏡像 Apple 網站內容。詳細限制及資料治理方法見 [條款、私隱與資料政策](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)。
+
+## 技術與資料來源參考
+
+- **Web 與平台技術：** [React](https://react.dev/)、[TypeScript](https://www.typescriptlang.org/docs/)、[Vite](https://vite.dev/)、瀏覽器 [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) 與 [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)，以及 [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/) 和 [Wrangler](https://developers.cloudflare.com/workers/wrangler/)。
+- **裝置資料參考：** 每個設定檔均記錄不含憑證、可公開存取的 Apple Support 來源連結；證據等級、審閱規則及更正流程見[準確度政策](docs/ACCURACY_POLICY.md)及[裝置設定檔指南](docs/DEVICE_PROFILE_GUIDE.md)。
+- **私隱與法律參考：** 公開指引包括 [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/)、[Apple 網站使用條款](https://www.apple.com/legal/internet-services/terms/site.html)及 [Apple 商標與著作權指引](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html)；Wallpect 的適用摘要見[條款、私隱與資料政策](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)。
+- **授權：** Wallpect 原始碼採用 [MIT License](LICENSE)；第三方套件及引用內容仍受各自授權與條款約束。來源連結只作引用，不代表背書或權利轉讓。

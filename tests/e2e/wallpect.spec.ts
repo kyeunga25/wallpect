@@ -64,7 +64,9 @@ test("@desktop local upload stays private and all export formats keep exact dime
     .locator(".left-rail")
     .getByPlaceholder("搜尋型號、年份或解析度…")
     .fill("iPhone 14 Pro");
-  await page.getByRole("button", { name: /iPhone 14 Pro，2022/ }).click();
+  await page
+    .getByRole("button", { name: /^iPhone 14 Pro \/ 15 \/ 15 Pro \/ 16，2022–2024/ })
+    .click();
   await page.getByRole("button", { name: "完整顯示" }).first().click();
   await page.getByRole("slider", { name: "縮放", exact: true }).fill("118");
   const safeArea = page.getByRole("checkbox", {
@@ -212,7 +214,7 @@ test("@desktop exposes accurate privacy, terms, disclaimer, and source notices",
   await expect(legalDialog.getByRole("heading", { name: "條款、私隱與資料使用。" })).toBeVisible();
   await expect(legalDialog.getByRole("heading", { name: "使用條款" })).toBeVisible();
   await expect(legalDialog.getByRole("heading", { name: "資料來源與方法" })).toBeVisible();
-  await expect(legalDialog).toContainText("生效日期：2026 年 8 月 2 日");
+  await expect(legalDialog).toContainText("生效日期：2026 年 8 月 10 日");
   await expect(legalDialog).toContainText("不使用 Apple 或第三方裝置資料 API");
   await expect(legalDialog).toContainText("並非法律意見");
   await expect(legalDialog.getByRole("link", { name: /Apple 網站使用條款/ })).toHaveAttribute(

@@ -564,7 +564,7 @@ summary:focus-visible,
   align-items: center;
   gap: 9px;
   width: 100%;
-  min-height: 64px;
+  min-height: 70px;
   padding: 9px 10px;
   border: 1px solid transparent;
   border-radius: 8px;
@@ -599,10 +599,13 @@ summary:focus-visible,
   gap: 2px;
 }
 .device-option strong {
+  display: -webkit-box;
   overflow: hidden;
   font-size: 13px;
+  line-height: 1.25;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .device-option small {
   color: var(--muted);
@@ -1656,14 +1659,37 @@ input:checked + .switch::after {
 .dialog-body a svg {
   width: 14px;
 }
+.data-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
 .data-count {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--canvas);
 }
 .data-count strong {
   color: var(--blue);
   font-size: 34px;
+  line-height: 1;
+}
+.data-count span {
+  line-height: 1.35;
+}
+.compatible-models ul {
+  max-height: 180px;
+  margin: 10px 0 0;
+  padding-left: 20px;
+  overflow: auto;
+}
+.compatible-models li + li {
+  margin-top: 4px;
 }
 .accuracy-list {
   display: grid;

@@ -1,7 +1,7 @@
 # Wallpect 條款、私隱與資料政策
 
-生效日期：2026 年 8 月 2 日
-適用版本：0.2.3
+生效日期：2026 年 8 月 10 日
+適用版本：0.3.0
 
 > 本文件記錄 Wallpect 測試版目前的產品行為及維護規則，只屬一般資料，並非法律意見。若加入收費、帳戶、廣告、分析、個人資料表格、使用者內容託管或新司法管轄區，必須先接受獨立法律審閱。
 
@@ -26,9 +26,9 @@
 
 Wallpect 前端不設定廣告 Cookie、不載入客戶端分析、不建立帳戶、不收集表格資料，也不把使用者選擇的圖片傳送到 Cloudflare。正常瀏覽公開網站仍會產生網絡請求；不應把「圖片不上傳」誤寫成「託管供應商完全不處理任何網絡資料」。
 
-0.2.3 會在首次讀取時把舊 `wallpect:recent-devices` 值限制為最多四個有效且不重複的裝置 ID，寫入 `wallpect:recent-devices:v1`，然後移除舊 key。遷移不會加入圖片、檔名、構圖或其他資料；若 storage 不可用，編輯器仍可運作而不保存偏好。
+0.3.0 會在首次讀取時把舊 `wallpect:recent-devices` key 及 0.3.0 前按個別型號保存的裝置 ID，映射到新的整合配置 ID、移除重複值，並把最多四個有效 ID 寫入 `wallpect:recent-devices:v1`；舊 key 隨後會被移除。遷移不會加入圖片、檔名、構圖或其他資料；若 storage 不可用，編輯器仍可運作而不保存偏好。
 
-參考：[香港私隱公署《擬備收集個人資料聲明及私隱政策聲明指引》](https://www.pcpd.org.hk/tc_chi/resources_centre/publications/files/GN_picspps_c.pdf)、[Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/)。
+參考：[Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/)。
 
 ## 3. 裝置資料來源與準確度
 
@@ -42,7 +42,7 @@ Wallpect 前端不設定廣告 Cookie、不載入客戶端分析、不建立帳�
 
 每個設定檔必須通過 schema 驗證：有限及正數尺寸、有效日期、唯一 ID／slug，以及無憑證的 `https://support.apple.com` 來源 URL。來源頁可能變更或停止提供，所以來源連結不構成持續準確的保證。
 
-Apple 的香港網站條款限制複製、重新發佈、鏡像及自動擷取其內容，因此 Wallpect 只作人工、有限的規格事實整理並連回來源；如使用模式或商業模式改變，應重新取得法律意見或適當授權。參考：[Apple 網站使用條款](https://www.apple.com/hk/legal/internet-services/terms/site.html)。
+Apple 網站條款限制複製、重新發佈、鏡像及自動擷取其內容，因此 Wallpect 只作人工、有限的規格事實整理並連回來源；如使用模式或商業模式改變，應重新取得法律意見或適當授權。參考：[Apple 網站使用條款](https://www.apple.com/legal/internet-services/terms/site.html)。
 
 ## 4. 商標、版權與獨立性
 
@@ -52,7 +52,7 @@ Apple 的香港網站條款限制複製、重新發佈、鏡像及自動擷取�
 - 使用者圖片的權利不會因本機處理而轉移給 Wallpect；使用者仍須確保自己有權使用圖片。
 - Wallpect 程式碼按 repository 的 [MIT License](../LICENSE) 發布；MIT License 不授予第三方商標、資料或使用者圖片的權利。
 
-參考：[Apple 使用商標和版權的指引](https://www.apple.com/hk/legal/intellectual-property/guidelinesfor3rdparties.html)。
+參考：[Apple 使用商標和版權的指引](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html)。
 
 ## 5. 新增第三方來源或 API 的合併門檻
 
@@ -85,8 +85,8 @@ Apple 的香港網站條款限制複製、重新發佈、鏡像及自動擷取�
 
 # Wallpect Terms, Privacy, and Data Policy
 
-Effective date: 2 August 2026
-Applies to version: 0.2.3
+Effective date: 10 August 2026
+Applies to version: 0.3.0
 
 > This document records the current behavior and maintenance rules of the Wallpect beta. It is general information, not legal advice. Independent legal review is required before adding payments, accounts, advertising, analytics, personal-data forms, hosted user content, or new jurisdictions.
 
@@ -103,17 +103,17 @@ The user-facing version is available in the website's “Legal & data” dialog.
 
 Wallpect keeps selected image bytes, filenames, Canvas pixels, and transforms in browser memory and does not upload them. It stores only the selected locale in `wallpect:locale:v1` and up to four recent device identifiers in `wallpect:recent-devices:v1`. Public app assets may be cached for reliability, but these caches do not contain user-selected images.
 
-On first read, version 0.2.3 sanitizes a legacy `wallpect:recent-devices` value to at most four valid, unique device IDs, writes the versioned key, and removes the legacy key. The migration adds no image, filename, composition, or other data. If storage is unavailable, the editor continues without persisting the preference.
+On first read, version 0.3.0 maps both the legacy `wallpect:recent-devices` key and pre-0.3.0 per-model device IDs to the new consolidated configuration IDs, removes duplicates, writes up to four valid IDs to `wallpect:recent-devices:v1`, and then removes the legacy key. The migration adds no image, filename, composition, or other data. If storage is unavailable, the editor continues without persisting the preference.
 
 The site is hosted on Cloudflare. Requests for public files pass through Cloudflare, which may process IP addresses, routing data, system configuration, and request metadata under its privacy policy. The app itself does not load advertising cookies, client-side analytics, account systems, or personal-data forms.
 
-References: [Hong Kong PCPD guidance](https://www.pcpd.org.hk/tc_chi/resources_centre/publications/files/GN_picspps_c.pdf), [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/).
+Reference: [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/).
 
 ## 3. Device data and source rules
 
 Profiles are manually curated from linked public `https://support.apple.com` specification and support pages. Wallpect does not call an Apple or third-party device-data API at runtime, scrape or mirror Apple websites, or reproduce Apple articles, product images, logos, interface assets, or marketing material. Derived geometry remains clearly labelled and is never promoted to verified without evidence.
 
-References: [Apple Website Terms of Use](https://www.apple.com/hk/legal/internet-services/terms/site.html), [Apple trademark and copyright guidelines](https://www.apple.com/hk/legal/intellectual-property/guidelinesfor3rdparties.html).
+References: [Apple Website Terms of Use](https://www.apple.com/legal/internet-services/terms/site.html), [Apple trademark and copyright guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html).
 
 ## 4. Third-party and API gate
 

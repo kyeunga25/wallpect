@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { AdjustmentControls } from "../../src/components/editor-controls/AdjustmentControls";
 import { DeviceSelector } from "../../src/components/device-selector/DeviceSelector";
 import { OverlayPanel } from "../../src/components/overlays/OverlayPanel";
@@ -17,11 +17,15 @@ function renderWithEditor(node: React.ReactNode) {
 }
 
 describe("editor controls", () => {
+  beforeEach(() => localStorage.clear());
+
   it("searches and selects a device profile", async () => {
     const user = userEvent.setup();
     renderWithEditor(<DeviceSelector />);
     await user.type(screen.getByPlaceholderText("搜尋型號、年份或解析度…"), "14 Pro");
-    const option = screen.getByRole("button", { name: /iPhone 14 Pro，2022/ });
+    const option = screen.getByRole("button", {
+      name: /^iPhone 14 Pro \/ 15 \/ 15 Pro \/ 16，2022–2024/,
+    });
     await user.click(option);
     expect(option).toHaveAttribute("aria-pressed", "true");
   });
@@ -32,26 +36,43 @@ describe("editor controls", () => {
     const search = screen.getByPlaceholderText("搜尋型號、年份或解析度…");
 
     await user.type(search, "1290");
-    expect(screen.getByText("4 個結果")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /iPhone 15 Pro Max，2023/ })).toBeInTheDocument();
+    expect(screen.getByText("1 個結果")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /iPhone 14 Pro Max.*2022–2024/ }),
+    ).toBeInTheDocument();
 
     await user.type(search, "{Escape}");
     expect(search).toHaveValue("");
-    expect(screen.getByText("27 個結果")).toBeInTheDocument();
+    expect(screen.getByText("19 個結果")).toBeInTheDocument();
   });
 
   it("shows the selected device again after browsing another category", async () => {
     const user = userEvent.setup();
     renderWithEditor(<DeviceSelector />);
 
-    await user.click(screen.getByRole("button", { name: "iPad · 20" }));
-    expect(screen.getByText("20 個結果")).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: /目前裝置.*iPhone 15 Pro/ }));
+    await user.click(screen.getByRole("button", { name: "iPad · 11" }));
+    expect(screen.getByText("11 個結果")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /目前裝置.*iPhone 14 Pro \/ 15 \/ 15 Pro \/ 16/ }),
+    );
 
-    expect(screen.getByRole("button", { name: "iPhone · 27" })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "iPhone · 19" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+  });
+
+  it("migrates recent-device aliases to one consolidated profile ID", () => {
+    localStorage.setItem(
+      "wallpect:recent-devices:v1",
+      JSON.stringify(["apple-iphone-14-pro", "apple-iphone-15-pro"]),
+    );
+
+    renderWithEditor(<DeviceSelector />);
+
+    expect(JSON.parse(localStorage.getItem("wallpect:recent-devices:v1") ?? "null")).toEqual([
+      "apple-iphone-15-pro",
+    ]);
   });
 
   it("renders MacBooks as laptops instead of desktop displays", async () => {
@@ -63,7 +84,7 @@ describe("editor controls", () => {
       </>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Mac · 27" }));
+    await user.click(screen.getByRole("button", { name: "Mac · 17" }));
     await user.click(screen.getByRole("button", { name: /MacBook Neo，2026/ }));
 
     expect(container.querySelector(".laptop-base")).toBeInTheDocument();

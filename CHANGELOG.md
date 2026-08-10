@@ -4,6 +4,26 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-10
+
+### Added
+
+- Added common legacy iPhone, iPad, Intel MacBook, iMac, Apple display, Studio Display XDR, and Pro Display XDR coverage.
+- Added searchable compatible-model metadata and a backward-compatible mapping from previous per-model profile IDs.
+
+### Changed
+
+- Consolidated 74 per-model entries into 47 distinct wallpaper configurations covering 191 named Apple models; configurations remain separate when cutout, logical canvas, safe area, or overlay geometry differs.
+- Split Apple device data into platform modules outside UI components and exposed model counts, year ranges, diagonals, and compatible-model details in the bilingual interface.
+- Expanded both READMEs with the Cloudflare Workers Static Assets deployment model, technology stack, safe self-hosting steps, runtime AI boundary, and source acknowledgements.
+- Expanded the bilingual deployment guide with fork-safe Wrangler configuration, local and Workers Builds workflows, Custom Domain setup, deployed verification, rollback, and public-repository data controls.
+- Removed a jurisdiction-specific privacy reference from the public documentation and in-app legal links.
+
+### Security
+
+- Extended profile validation to reject duplicate compatible-model names, malformed alias metadata, and identical wallpaper configurations that were not consolidated.
+- Kept recent-device migration limited to canonical device identifiers; image bytes, filenames, composition state, and export settings remain browser-memory only.
+
 ## [0.2.3] - 2026-08-02
 
 ### Added
@@ -94,7 +114,8 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
 
-[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/kyeunga25/wallpect/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/kyeunga25/wallpect/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/kyeunga25/wallpect/compare/v0.2.0...v0.2.1

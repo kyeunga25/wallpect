@@ -1,50 +1,61 @@
 import { describe, expect, it } from "vitest";
-import { deviceProfiles } from "../../src/data/devices";
+import { deviceProfiles, getDeviceProfile, normalizeDeviceProfileId } from "../../src/data/devices";
 import { validateDeviceProfile, validateDeviceProfiles } from "../../src/core/validation";
 
+function profileForModel(name: string) {
+  return deviceProfiles.find((profile) =>
+    profile.compatibleModels.some((item) => item.name === name),
+  );
+}
+
 describe("Apple device profiles", () => {
-  it("covers every requested Apple display model from the target years", () => {
-    expect(deviceProfiles.filter((profile) => profile.category === "iphone")).toHaveLength(27);
-    expect(deviceProfiles.filter((profile) => profile.category === "ipad")).toHaveLength(20);
+  it("covers common Apple display families through consolidated wallpaper configurations", () => {
+    expect(deviceProfiles.filter((profile) => profile.category === "iphone")).toHaveLength(19);
+    expect(deviceProfiles.filter((profile) => profile.category === "ipad")).toHaveLength(11);
     expect(
       deviceProfiles.filter((profile) => ["macbook", "imac", "display"].includes(profile.category)),
-    ).toHaveLength(27);
+    ).toHaveLength(17);
+    expect(
+      deviceProfiles.reduce((count, profile) => count + profile.compatibleModels.length, 0),
+    ).toBe(191);
 
-    for (const id of [
-      "apple-iphone-13-pro-max",
-      "apple-iphone-se-3",
-      "apple-iphone-16-pro-max",
-      "apple-iphone-air",
-      "apple-iphone-17e",
-      "apple-ipad-9",
-      "apple-ipad-pro-12-9-6",
-      "apple-ipad-mini-a17-pro",
-      "apple-ipad-pro-13-m5",
-      "apple-ipad-air-13-m4",
-      "apple-macbook-pro-16-m1-pro-max",
-      "apple-macbook-pro-13-m2",
-      "apple-macbook-neo",
-      "apple-macbook-air-15-m5",
-      "apple-macbook-pro-16-m5-pro-max",
+    for (const model of [
+      "iPhone (1st gen)",
+      "iPhone 8",
+      "iPhone 17e",
+      "iPad mini (5th gen)",
+      "iPad Pro 13-inch (M5)",
+      "MacBook Air 13-inch (M1)",
+      "MacBook Neo",
+      "iMac Retina 5K 27-inch (2020)",
+      "Studio Display",
+      "Studio Display XDR",
+      "Pro Display XDR",
     ]) {
-      expect(
-        deviceProfiles.some((profile) => profile.id === id),
-        id,
-      ).toBe(true);
+      expect(profileForModel(model), model).toBeDefined();
     }
   });
 
-  it("keeps same-size models distinct when their display configuration differs", () => {
-    const iphone14 = deviceProfiles.find((profile) => profile.id === "apple-iphone-14");
-    const iphone14Pro = deviceProfiles.find((profile) => profile.id === "apple-iphone-14-pro");
-    const iphone15 = deviceProfiles.find((profile) => profile.id === "apple-iphone-15");
-    const iphone15Pro = deviceProfiles.find((profile) => profile.id === "apple-iphone-15-pro");
+  it("combines identical wallpaper canvases but keeps obstruction geometry distinct", () => {
+    const iphone14Pro = profileForModel("iPhone 14 Pro");
+    const iphone15Pro = profileForModel("iPhone 15 Pro");
+    const iphone12 = profileForModel("iPhone 12");
+    const iphone13 = profileForModel("iPhone 13");
 
-    expect(iphone14?.chassis.screenDiagonalInches).toBe(iphone14Pro?.chassis.screenDiagonalInches);
-    expect(iphone14?.display.physicalHeightPx).not.toBe(iphone14Pro?.display.physicalHeightPx);
-    expect(iphone14?.cutout.type).toBe("notch");
-    expect(iphone14Pro?.cutout.type).toBe("dynamic-island");
-    expect(iphone15?.chassis.physicalWidthMm).not.toBe(iphone15Pro?.chassis.physicalWidthMm);
+    expect(iphone14Pro?.id).toBe(iphone15Pro?.id);
+    expect(iphone12?.display.physicalWidthPx).toBe(iphone13?.display.physicalWidthPx);
+    expect(iphone12?.display.physicalHeightPx).toBe(iphone13?.display.physicalHeightPx);
+    expect(iphone12?.id).not.toBe(iphone13?.id);
+    expect(iphone12?.cutout.boundsPx?.width).not.toBe(iphone13?.cutout.boundsPx?.width);
+  });
+
+  it("maps previously stored profile IDs to their consolidated configuration", () => {
+    expect(normalizeDeviceProfileId("apple-iphone-14-pro")).toBe("apple-iphone-15-pro");
+    expect(getDeviceProfile("apple-iphone-14-pro").id).toBe("apple-iphone-15-pro");
+    expect(getDeviceProfile("apple-ipad-air-13-m4").id).toBe("apple-ipad-pro-12-9-5");
+    expect(getDeviceProfile("apple-macbook-pro-16-m5-pro-max").id).toBe(
+      "apple-macbook-pro-16-m1-pro-max",
+    );
   });
 
   it("validates the complete data set", () => {
@@ -54,12 +65,16 @@ describe("Apple device profiles", () => {
     );
   });
 
-  it("keeps all device ids and slugs unique", () => {
+  it("keeps all profile and compatible-model identifiers unique", () => {
     expect(new Set(deviceProfiles.map((profile) => profile.id)).size).toBe(deviceProfiles.length);
     expect(new Set(deviceProfiles.map((profile) => profile.slug)).size).toBe(deviceProfiles.length);
+    const modelNames = deviceProfiles.flatMap((profile) =>
+      profile.compatibleModels.map((item) => item.name.toLocaleLowerCase("en")),
+    );
+    expect(new Set(modelNames).size).toBe(modelNames.length);
   });
 
-  it("rejects unsafe or malformed source and geometry data", () => {
+  it("rejects unsafe or malformed source, model, and geometry data", () => {
     const unsafeSource = structuredClone(deviceProfiles[0]);
     unsafeSource.metadata.sourceUrls = ["javascript:alert(1)"];
     expect(validateDeviceProfile(unsafeSource)).toContain(
@@ -78,6 +93,12 @@ describe("Apple device profiles", () => {
       "lastVerified must be a real YYYY-MM-DD date",
     );
 
+    const missingModels = structuredClone(deviceProfiles[0]);
+    missingModels.compatibleModels = [];
+    expect(validateDeviceProfile(missingModels)).toContain(
+      "at least one compatible model is required",
+    );
+
     const outOfBoundsOverlay = structuredClone(deviceProfiles[0]);
     outOfBoundsOverlay.overlays.statusBar = {
       x: 0,
@@ -90,10 +111,25 @@ describe("Apple device profiles", () => {
     );
   });
 
-  it("rejects duplicate slugs independently of ids", () => {
+  it("rejects duplicate slugs and unconsolidated wallpaper configurations", () => {
     const first = structuredClone(deviceProfiles[0]);
-    const second = structuredClone(deviceProfiles[1]);
-    second.slug = first.slug;
-    expect(() => validateDeviceProfiles([first, second])).toThrow("duplicate slug");
+    const duplicateSlug = structuredClone(deviceProfiles[1]);
+    duplicateSlug.slug = first.slug;
+    expect(() => validateDeviceProfiles([first, duplicateSlug])).toThrow("duplicate slug");
+
+    const duplicateConfiguration = structuredClone(first);
+    duplicateConfiguration.id = "apple-duplicate-configuration";
+    duplicateConfiguration.slug = "duplicate-configuration";
+    duplicateConfiguration.model = "Duplicate configuration";
+    duplicateConfiguration.compatibleModels = [
+      {
+        name: "Duplicate configuration model",
+        releaseYear: duplicateConfiguration.releaseYear,
+        screenDiagonalInches: duplicateConfiguration.chassis.screenDiagonalInches,
+      },
+    ];
+    expect(() => validateDeviceProfiles([first, duplicateConfiguration])).toThrow(
+      "duplicates wallpaper configuration",
+    );
   });
 });
