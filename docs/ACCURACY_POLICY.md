@@ -13,6 +13,8 @@ Wallpect 會將顯示硬件的公開事實，與必須量度或推算的幾何�
 
 初始資料集會刻意標記為 `high` 而非 `verified`：顯示解析度已有公開資料，但大部分安全區域、圓角、鎖定畫面、選單列與 Dock 尺寸都是推算近似值。
 
+多個型號只會在實體及邏輯畫布、開孔、圓角、安全區域、覆疊與 wallpaper 行為一致時合併。相同吋數或相同實體解析度本身不等於相同預覽；任何會改變構圖遮擋的差異都必須保留獨立配置。合併配置內的機身尺寸是外框顯示代表值，精確輸出聲明只適用於列明的共同畫布。
+
 ### 預覽所代表的意思
 
 - 裝置長寬比與匯出像素尺寸直接來自所選設定檔。
@@ -40,6 +42,8 @@ Wallpect separates facts that are published for display hardware from geometry t
 - `legacy`: an older profile has not completed the current review process.
 
 The initial data set is intentionally marked `high`, not `verified`: display resolutions are published, while most safe-area, corner, Lock Screen, menu-bar, and Dock dimensions are derived approximations.
+
+Models are consolidated only when their physical and logical canvases, cutouts, corners, safe areas, overlays, and wallpaper behavior match. A shared diagonal or physical resolution does not by itself imply an identical preview; any difference that changes composition obstructions requires a separate configuration. Chassis dimensions in a grouped configuration are representative frame values, while the exact-output claim applies only to the listed shared canvas.
 
 ### What the preview means
 

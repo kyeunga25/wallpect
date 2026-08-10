@@ -4,7 +4,7 @@
 
 **Privacy-first wallpaper preview and fitting for Apple devices.**
 
-[Open Wallpect](https://wallpect.k-y.cc) · [繁體中文](README.zh-Hant.md) · [Documentation](#documentation)
+[Open Wallpect](https://wallpect.k-y.cc) · [繁體中文（主要文件）](README.zh-Hant.md) · [Documentation](#documentation)
 
 [![CI](https://github.com/kyeunga25/wallpect/actions/workflows/ci.yml/badge.svg)](https://github.com/kyeunga25/wallpect/actions/workflows/ci.yml)
 [![Latest release](https://img.shields.io/github/v/release/kyeunga25/wallpect?display_name=tag&sort=semver)](https://github.com/kyeunga25/wallpect/releases/latest)
@@ -15,7 +15,7 @@
 
 ![Wallpect desktop workspace showing an iPhone wallpaper preview and export controls](docs/screenshots/wallpect-desktop.png)
 
-Wallpect helps you compose an image for a selected Apple device, inspect likely system obstructions, and export it at the profile's exact pixel dimensions. Image decoding, editing, preview, and export all happen inside your browser—there is no image upload endpoint, account, or third-party image analysis.
+Wallpect helps you compose an image for a selected Apple device, inspect likely system obstructions, and export it at the profile's exact pixel dimensions. The production app is deployed on Cloudflare Workers using the assets-only Static Assets mode. Image decoding, editing, preview, and export all happen inside your browser—there is no image upload endpoint, account, database, or third-party image analysis.
 
 ## What you can do
 
@@ -25,7 +25,8 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 
 ### Highlights
 
-- 74 profiles: 27 iPhone, 20 iPad, and 27 Mac/display profiles, covering every requested display family introduced from 2021 through July 2026
+- 47 distinct canvas configurations: 19 iPhone, 11 iPad, and 17 Mac/Apple-display configurations covering 191 named models from 2007–2026
+- Devices with the same wallpaper canvas and obstruction geometry share one option; every model name, year, diagonal, and resolution remains searchable
 - Local PNG, JPEG, and WebP decoding, limited to 30 MB, 12,000 px on the longest edge, and 72 megapixels
 - Portrait and landscape compositions stored independently for each device
 - Solid, transparent, or blurred-extension backgrounds
@@ -62,6 +63,20 @@ Wallpect separates published display facts from geometry that must be measured o
 
 See the [accuracy policy](docs/ACCURACY_POLICY.md) for the complete definition and reporting requirements.
 
+## Technology stack
+
+| Layer                 | Technology                                                | Purpose                                                        |
+| --------------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
+| UI and application    | React 19, strict TypeScript 5, Vite 8                     | Typed single-page application compiled to static assets        |
+| Browser image runtime | Canvas 2D, File/Blob APIs, Object URLs                    | Local decode, composition, preview, and export                 |
+| Interface assets      | Lucide React                                              | Open-source interface icons                                    |
+| Hosting               | Cloudflare Workers Static Assets and Wrangler 4           | Assets-only edge delivery, SPA fallback, previews, and deploys |
+| Offline shell         | Service Worker and Cache Storage                          | Same-origin app-shell fallback after the first online visit    |
+| Quality               | ESLint, Prettier, Vitest, Testing Library, and Playwright | Static checks and unit, integration, and browser testing       |
+| Automation            | GitHub Actions and Cloudflare Workers Builds              | Read-only CI checks plus branch previews and production builds |
+
+The current deployment has no SSR, Worker request handler, runtime API, authentication, analytics, database, object-storage binding, or runtime AI model. Exact dependency versions are locked in [`package-lock.json`](package-lock.json), while [`package.json`](package.json) is the readable source of truth for scripts and direct dependencies.
+
 ## Local development
 
 Requirements: Node.js 22 or newer and npm.
@@ -89,11 +104,37 @@ npm run test:e2e
 
 Set `PLAYWRIGHT_BASE_URL` to run the same browser matrix against a deployed Workers preview or the production app.
 
-## Deployment and releases
+## Deployment, self-hosting, and releases
 
 Wallpect is deployed as an assets-only Cloudflare Worker with Static Assets. The Worker owns `wallpect.k-y.cc` as a Custom Domain. A push to `main` triggers a production Workers Build; non-production branches create preview versions without changing production traffic. Production rollback uses Workers version history; no Cloudflare Pages project is required.
 
-See the [deployment guide](docs/DEPLOYMENT.md) for platform settings and the [release guide](docs/RELEASING.md) for the version, validation, preview, production, and rollback checklist.
+You can self-deploy a fork to your own Cloudflare account without a database, storage binding, AI key, or runtime secret:
+
+1. Fork or clone the repository and install Node.js 22 or newer.
+2. Before the first deploy, edit `wrangler.toml`: choose a Worker `name` in your own account, and remove the checked-in `[[routes]]` block for a `workers.dev` deployment or replace it with a Custom Domain that you control.
+3. Install and validate the locked project:
+
+   ```bash
+   npm ci
+   npm run check
+   npm run format:check
+   npm run worker:check
+   ```
+
+4. Authenticate locally and deploy the static build:
+
+   ```bash
+   npx wrangler login
+   npm run worker:deploy
+   ```
+
+5. Run the browser suite against the URL returned by Wrangler:
+
+   ```bash
+   PLAYWRIGHT_BASE_URL=https://<your-worker-url> npm run test:e2e
+   ```
+
+Wrangler credentials stay outside the repository. Never add API tokens, account or zone identifiers, deployment IDs, private domains, production data, local paths, logs, or screenshots containing private content to source control. The [deployment and self-hosting guide](docs/DEPLOYMENT.md) contains the safe configuration template, Workers Builds setup, Custom Domain steps, validation checklist, and rollback procedure. The [release guide](docs/RELEASING.md) covers the versioned release workflow.
 
 ## Architecture
 
@@ -115,7 +156,7 @@ See the [architecture document](docs/ARCHITECTURE.md) for the runtime boundary, 
 - [Accuracy policy](docs/ACCURACY_POLICY.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Device profile guide](docs/DEVICE_PROFILE_GUIDE.md)
-- [Deployment guide](docs/DEPLOYMENT.md)
+- [Deployment and self-hosting guide](docs/DEPLOYMENT.md)
 - [Release guide](docs/RELEASING.md)
 - [Legal, privacy, and data policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)
 - [Changelog](CHANGELOG.md)
@@ -131,3 +172,10 @@ Wallpect is available under the [MIT License](LICENSE).
 Wallpect is an independent tool. It is not affiliated with or endorsed by Apple Inc. Apple product names are used only to identify compatible device profiles.
 
 Device specifications are manually curated from linked public manufacturer support pages. Wallpect does not use an Apple or third-party device-data API at runtime and does not scrape or mirror Apple website content. See the [Terms, Privacy, and Data Policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md) for the detailed limitations and data-governance gate.
+
+## Technology and source references
+
+- **Web and platform technology:** [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/docs/), [Vite](https://vite.dev/), the browser [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) and [Service Worker API](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API), plus [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/) and [Wrangler](https://developers.cloudflare.com/workers/wrangler/).
+- **Device references:** Each profile records credential-free links to public Apple Support pages. The evidence levels, review rules, and correction process are documented in the [accuracy policy](docs/ACCURACY_POLICY.md) and [device profile guide](docs/DEVICE_PROFILE_GUIDE.md).
+- **Privacy and legal references:** Public guidance includes the [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/), [Apple Website Terms of Use](https://www.apple.com/legal/internet-services/terms/site.html), and [Apple trademark and copyright guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html). Their application to Wallpect is summarized in the [legal, privacy, and data policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md).
+- **Licensing:** Wallpect's source is released under the [MIT License](LICENSE). Third-party packages and referenced content remain subject to their own licences and terms; a link is a source citation, not an endorsement or transfer of rights.

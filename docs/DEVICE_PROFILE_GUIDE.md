@@ -1,87 +1,97 @@
-# 裝置設定檔指南 / Device Profile Guide
+# 裝置配置指南 / Device Configuration Guide
 
-## 中文
+## 繁體中文
 
-裝置設定檔是位於 `src/data/devices/apple/profiles.ts` 的純 TypeScript 記錄。預覽介面不含針對個別型號的分支；只要加入有效的設定檔，它便會自動出現在搜尋、選擇器、覆疊、資訊與匯出功能中。
+Wallpect 把「可在選單選取的桌布配置」與「使用該配置的具名裝置型號」分開。資料位於 `src/data/devices/apple/`：`iphone.ts`、`ipad.ts` 與 `mac.ts` 保存平台資料，`catalog.ts` 建立共用結構，`profiles.ts` 只組合公開清單及舊 ID 映射。UI 元件不保存裝置資料。
 
-目前資料集包含 27 個 iPhone、20 個 2021 年或之後的 iPad，以及 27 個 2021 年或之後、具備內建螢幕的 Mac／Apple 顯示器設定檔。Mac mini、Mac Studio 與 Mac Pro 沒有內建螢幕，其桌布解析度由外接顯示器決定，因此不建立虛構的主機螢幕設定檔。
+截至 2026 年 8 月 10 日，資料集提供 47 個互不重複的配置：19 個 iPhone、11 個 iPad，以及 17 個 Mac／Apple 顯示器配置，共覆蓋 191 個具名型號。範圍由第一代 iPhone、早期 iPad 與 Intel Mac，延伸至 iPhone 17e、M5 Mac、Studio Display XDR 與 Pro Display XDR。
 
-### 必填欄位
+Mac mini、Mac Studio 與 Mac Pro 沒有內建螢幕；它們應按實際連接的 Apple 顯示器配置預覽，不會獲得虛構的主機螢幕設定。
 
-每個設定檔必須包含：
+### 合併規則
 
-- 穩定的 `apple-*` id 與 slug；
-- 平台、類別、系列、型號與推出年份；
-- 支援的螢幕方向清單；
-- 用於相對外觀顯示的機身尺寸與對角線；
-- 實體像素、邏輯點數、DPR、比例、原生方向與圓角半徑；
-- 開孔類型及可選的像素邊界；
-- 附有證據來源的安全區域邊距；
-- 與平台相關的覆疊矩形；
-- 桌布行為說明；
-- 來源 URL、上次檢查日期、準確度等級與備註。
+只有下列 wallpaper 相關資料相同時，多個型號才可合併成一個選項：
 
-所有像素幾何均使用設定檔的原生實體座標空間。對於原生直向的設定檔，橫向幾何會由 `orientDevice` 與 `orientRect` 旋轉。
+- 平台及支援方向；
+- 實體輸出解析度、邏輯畫布、DPR、長寬比及圓角；
+- 瀏海、Dynamic Island 或其他開孔幾何；
+- 安全區域及預覽覆疊；
+- 系統 wallpaper 行為。
 
-### 加入設定檔
+只有相同螢幕吋數或相同實體解析度並不足以合併。例如 iPhone 12 與 iPhone 13 的輸出同為 `1170 × 2532`，但瀏海幾何不同，因此保留兩個配置。相反，iPhone 14 Pro、iPhone 15、iPhone 15 Pro 與 iPhone 16 的畫布及遮擋幾何相同，所以共用一個選項。
 
-1. 找出製造商的技術規格，以及任何未公開幾何資料的可靠來源。
-2. 使用適合的 phone、tablet 或 Mac helper 加入記錄。
-3. 由實體寬度／高度計算 `aspectRatio`；不要輸入四捨五入的市場推廣比例。
-4. 將未公開的安全區域、開孔或圓角幾何標記為 `derived` 或 `estimated`。
-5. 引入新的幾何系列時，加入設定檔數量或特定設定檔的單元測試。
-6. 執行 `npm run check`。
+每個配置的 `compatibleModels` 保存完整型號名稱、推出年份及對角線；搜尋會讀取所有別名、年份、吋數、實體及邏輯解析度。`releaseYear` 代表該配置內最新型號的年份，只用於排序。合併配置的 `chassis` 是相對外框的代表值，不應被解讀為每個相容型號都具有完全相同的機身尺寸。
 
-`validateDeviceProfiles` 會在匯入裝置資料及測試期間執行。它會拒絕重複記錄、無效尺寸、不一致的長寬比、缺少來源、負數邊距及格式錯誤的檢查日期。
+### 舊 ID 遷移
 
-### 資料慣例
+0.3.0 以前每個型號各有一個 profile ID。`APPLE_DEVICE_PROFILE_ID_ALIASES` 會把仍可能存在於 `wallpect:recent-devices:v1` 的舊 ID 映射到新的標準配置 ID，去除重複後再寫回。遷移只處理最多四個裝置識別碼，不會加入圖片、檔名、構圖或其他資料。
 
-- 實體顯示尺寸一律使用像素。
-- 邏輯視窗尺寸使用點數。
-- 機身尺寸使用毫米；對角線使用英吋。
-- 矩形使用原生左上角為原點的 `{ x, y, width, height }`。
-- 安全區域邊距使用 `{ top, right, bottom, left }`。
-- 硬件解析度與系統 UI 幾何屬於兩項獨立陳述。
+### 必填資料與驗證
+
+每個配置必須包含：
+
+- 穩定的 `apple-*` ID、slug、平台、類別及精簡顯示名稱；
+- 至少一個具唯一名稱、有效年份及正數對角線的 `compatibleModels` 項目；
+- 支援方向、代表機身資料、實體像素、邏輯點數、DPR、原生方向及圓角；
+- 開孔、安全區域、平台覆疊與 wallpaper 行為；
+- 不含憑證的 `https://support.apple.com` 來源、真實檢查日期、準確度及備註。
+
+`validateDeviceProfiles` 會拒絕重複 ID／slug／型號名稱、相同但未合併的 wallpaper 配置、非有限或越界幾何、錯誤長寬比、不安全來源 URL、無效日期，以及與最新相容型號不一致的 `releaseYear`。
+
+### 新增資料
+
+1. 先在 Apple 官方技術規格或型號辨識頁核對型號、年份及原生解析度。
+2. 若 wallpaper 配置已存在，只在相應配置的 `compatibleModels` 加入型號及來源；不要建立重複選項。
+3. 若開孔、邏輯畫布、安全區域、圓角或系統行為不同，建立新的配置。
+4. 未公開的幾何必須標為 `derived` 或 `estimated`；不可把推算資料標為 `verified`。
+5. 更新覆蓋數及加入代表性測試，並執行 `npm run lint`、`npm test` 與 `npm run build`。
+
+所有像素幾何均使用設定檔的原生實體座標空間。原生直向配置的橫向幾何由 `orientDevice` 與 `orientRect` 旋轉；預覽與匯出仍共用 `renderWallpaper`。
 
 ## English
 
-Device profiles are plain TypeScript records in `src/data/devices/apple/profiles.ts`. The preview does not contain model-specific branches: adding a valid profile is enough for it to appear in search, selection, overlays, information, and export.
+Wallpect separates a selectable wallpaper configuration from the named device models that use it. Data lives under `src/data/devices/apple/`: `iphone.ts`, `ipad.ts`, and `mac.ts` hold platform records, `catalog.ts` creates the shared structure, and `profiles.ts` only assembles the public list and previous-ID map. UI components do not own device data.
 
-The current data set contains 27 iPhones, 20 iPads introduced in 2021 or later, and 27 Macs with built-in displays or Apple displays introduced in 2021 or later. Mac mini, Mac Studio, and Mac Pro have no built-in display, so their wallpaper resolution is determined by the attached display and no fictitious computer-screen profile is created.
+As reviewed on 10 August 2026, the data set provides 47 distinct configurations: 19 iPhone, 11 iPad, and 17 Mac/Apple-display configurations covering 191 named models. Coverage runs from the first iPhone, early iPads, and Intel Macs through iPhone 17e, M5 Macs, Studio Display XDR, and Pro Display XDR.
 
-### Required fields
+Mac mini, Mac Studio, and Mac Pro have no built-in screen. Preview them through the Apple display that is actually attached; Wallpect does not invent a computer-screen profile for those hosts.
 
-Every profile must include:
+### Consolidation rule
 
-- stable `apple-*` id and slug;
-- platform, category, family, model, and release year;
-- supported orientation list;
-- chassis dimensions and diagonal for relative presentation;
-- physical pixels, logical points, DPR, ratio, orientation, and corner radius;
-- cutout type and optional pixel bounds;
-- safe-area insets with a declared evidence source;
-- overlay rectangles relevant to the platform;
-- wallpaper behavior notes;
-- source URLs, last-review date, accuracy level, and notes.
+Models may share one option only when all wallpaper-relevant data matches:
 
-All pixel geometry uses the profile's native physical coordinate space. For a portrait-native profile, landscape geometry is rotated by `orientDevice` and `orientRect`.
+- platform and supported orientations;
+- physical output resolution, logical canvas, DPR, aspect ratio, and corners;
+- notch, Dynamic Island, or other cutout geometry;
+- safe areas and preview overlays;
+- system wallpaper behavior.
 
-### Adding a profile
+Matching screen size or physical resolution alone is insufficient. For example, iPhone 12 and iPhone 13 both output `1170 × 2532`, but their notch geometry differs, so they remain separate configurations. iPhone 14 Pro, iPhone 15, iPhone 15 Pro, and iPhone 16 share the same canvas and obstruction geometry, so they use one option.
 
-1. Locate the manufacturer's technical specification and a reliable source for any unpublished geometry.
-2. Add the record through the appropriate phone, tablet, or Mac helper.
-3. Compute `aspectRatio` from physical width / height; never type a rounded marketing ratio.
-4. Mark unpublished safe-area, cutout, or corner geometry as `derived` or `estimated`.
-5. Add a profile-count or profile-specific unit test when introducing a new geometry family.
-6. Run `npm run check`.
+Each configuration's `compatibleModels` records every full model name, release year, and diagonal. Search indexes all aliases, years, diagonals, physical resolutions, and logical resolutions. `releaseYear` is the newest compatible-model year and is used only for sorting. A grouped configuration's `chassis` is a representative frame value; it does not claim that every compatible model has identical body dimensions.
 
-`validateDeviceProfiles` runs when device data is imported and during tests. It rejects duplicates, invalid dimensions, inconsistent aspect ratios, missing sources, negative insets, and malformed review dates.
+### Previous-ID migration
 
-### Data conventions
+Before 0.3.0, each model had its own profile ID. `APPLE_DEVICE_PROFILE_ID_ALIASES` maps IDs that may still exist in `wallpect:recent-devices:v1` to the new canonical configuration, removes duplicates, and writes the canonical list back. Migration handles only up to four device identifiers; it does not add images, filenames, compositions, or other data.
 
-- Physical display dimensions are always pixels.
-- Logical viewport dimensions are points.
-- Chassis measurements are millimetres; diagonal is inches.
-- Rectangles use `{ x, y, width, height }` from the native top-left origin.
-- Safe-area insets use `{ top, right, bottom, left }`.
-- Hardware resolution and system UI geometry are separate claims.
+### Required data and validation
+
+Every configuration must include:
+
+- a stable `apple-*` ID, slug, platform, category, and concise display label;
+- at least one uniquely named `compatibleModels` item with a valid year and positive diagonal;
+- orientations, representative chassis data, physical pixels, logical points, DPR, native orientation, and corners;
+- cutout, safe area, platform overlays, and wallpaper behavior;
+- credential-free `https://support.apple.com` sources, a real review date, accuracy, and notes.
+
+`validateDeviceProfiles` rejects duplicate IDs, slugs, or model names; identical but unconsolidated wallpaper configurations; non-finite or out-of-bounds geometry; inconsistent ratios; unsafe source URLs; invalid dates; and a `releaseYear` that does not match the newest compatible model.
+
+### Adding data
+
+1. Verify the model, year, and native resolution in an official Apple specification or identification page.
+2. If the wallpaper configuration already exists, add the model and source to its `compatibleModels`; do not create another option.
+3. Create a configuration when cutout, logical canvas, safe area, corner, or system behavior differs.
+4. Mark unpublished geometry `derived` or `estimated`; never promote inferred data to `verified`.
+5. Update coverage counts and representative tests, then run `npm run lint`, `npm test`, and `npm run build`.
+
+All pixel geometry uses the profile's native physical coordinate space. `orientDevice` and `orientRect` rotate portrait-native geometry, while preview and export continue to share `renderWallpaper`.

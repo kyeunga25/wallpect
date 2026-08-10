@@ -70,7 +70,9 @@ const zhHant: Record<string, string> = {
   "Current device": "目前裝置",
   Show: "顯示",
   "Available models": "可選型號",
+  "Available configurations": "可選畫布配置",
   "{count} results": "{count} 個結果",
+  "{count} models": "{count} 個型號",
   Recent: "最近使用",
   "{group} models": "{group} 型號",
   "{model}, {year}, {width} by {height}": "{model}，{year}，{width} × {height}",
@@ -140,6 +142,7 @@ const zhHant: Record<string, string> = {
   "Choose an image": "選擇圖片",
   "Device information": "裝置資訊",
   Model: "型號",
+  "Compatible models": "相容型號",
   "Physical resolution": "實體解析度",
   "Logical viewport": "邏輯視窗",
   "Pixel density": "像素密度",
@@ -166,6 +169,8 @@ const zhHant: Record<string, string> = {
     "解析度取自公開規格；安全區域幾何為推算值。",
   "Published native display resolution with approximate menu bar, Dock, and notch regions.":
     "原生解析度取自公開規格；選單列、Dock 與瀏海區域為概略值。",
+  "Grouped options share the same wallpaper canvas and obstruction geometry.":
+    "合併選項只包含桌布畫布及遮擋幾何相同的型號。",
   "Export format": "匯出格式",
   Quality: "品質",
   Filename: "檔名",
@@ -213,7 +218,7 @@ const zhHant: Record<string, string> = {
   "Legal, privacy, and data use.": "條款、私隱與資料使用。",
   "Plain-language terms, limitations, and source rules for using Wallpect.":
     "以清晰文字說明 Wallpect 的使用條款、限制及資料來源規則。",
-  "Effective date: 2 August 2026": "生效日期：2026 年 8 月 2 日",
+  "Effective date: 10 August 2026": "生效日期：2026 年 8 月 10 日",
   "Terms of use": "使用條款",
   "By using Wallpect, you agree to use it lawfully and not to disrupt, bypass security controls, overload, or misuse the service. If you do not agree, do not use the service.":
     "使用 Wallpect 即表示你同意合法使用本服務，不會干擾、規避安全控制、令服務過載或以其他方式濫用服務。如你不同意，請勿使用本服務。",
@@ -242,12 +247,13 @@ const zhHant: Record<string, string> = {
   "Official reference links": "官方參考連結",
   "Apple website terms": "Apple 網站使用條款",
   "Apple trademark guidelines": "Apple 商標使用指引",
-  "Hong Kong privacy guidance": "香港私隱指引",
   "Cloudflare privacy policy": "Cloudflare 私隱政策",
   "Report a problem on GitHub": "在 GitHub 回報問題",
   "This notice explains the current beta implementation and is general information, not legal advice.":
     "本聲明用於說明目前測試版的實作，只屬一般資料，並非法律意見。",
   "Apple-first profiles included": "個以 Apple 為主的裝置設定檔",
+  "Consolidated preview configurations": "個合併預覽配置",
+  "Named Apple models covered": "個已涵蓋 Apple 型號",
   "Accuracy levels": "精確度等級",
   "Cross-checked with official specifications and measured data.":
     "已與官方規格及量測資料交叉核對。",

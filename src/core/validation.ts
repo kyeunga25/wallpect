@@ -18,6 +18,22 @@ function isValidReviewDate(value: string) {
   return !Number.isNaN(date.valueOf()) && date.toISOString().slice(0, 10) === value;
 }
 
+function isValidReleaseYear(value: number) {
+  return Number.isInteger(value) && value >= 2007 && value <= 2100;
+}
+
+function wallpaperConfigurationSignature(profile: DeviceProfile) {
+  return JSON.stringify({
+    platform: profile.platform,
+    supportedOrientations: profile.supportedOrientations,
+    display: profile.display,
+    cutout: profile.cutout,
+    safeArea: profile.safeArea,
+    overlays: profile.overlays,
+    wallpaperBehavior: profile.wallpaperBehavior,
+  });
+}
+
 function isAllowedSourceUrl(value: string) {
   try {
     const url = new URL(value);
@@ -52,12 +68,25 @@ export function validateDeviceProfile(profile: DeviceProfile): string[] {
   if (!PROFILE_SLUG.test(profile.slug)) errors.push("slug must use lowercase URL-safe segments");
   if (!profile.model.trim()) errors.push("model is required");
   if (profile.brand !== "Apple") errors.push("brand must be Apple for this data set");
-  if (
-    !Number.isInteger(profile.releaseYear) ||
-    profile.releaseYear < 2007 ||
-    profile.releaseYear > 2100
-  )
+  if (!isValidReleaseYear(profile.releaseYear))
     errors.push("releaseYear must be a plausible four-digit year");
+  if (!profile.compatibleModels.length) errors.push("at least one compatible model is required");
+  const compatibleNames = new Set<string>();
+  for (const compatibleModel of profile.compatibleModels) {
+    const normalizedName = compatibleModel.name.trim().toLocaleLowerCase("en");
+    if (!normalizedName) errors.push("compatible model name is required");
+    if (compatibleNames.has(normalizedName)) errors.push("compatible model names must be unique");
+    compatibleNames.add(normalizedName);
+    if (!isValidReleaseYear(compatibleModel.releaseYear))
+      errors.push("compatible model releaseYear must be a plausible four-digit year");
+    if (!isPositiveFinite(compatibleModel.screenDiagonalInches))
+      errors.push("compatible model diagonal must be finite and positive");
+  }
+  const latestCompatibleYear = Math.max(
+    ...profile.compatibleModels.map((item) => item.releaseYear),
+  );
+  if (profile.compatibleModels.length && profile.releaseYear !== latestCompatibleYear)
+    errors.push("releaseYear must match the latest compatible model year");
   if (!profile.supportedOrientations.length)
     errors.push("at least one supported orientation is required");
   if (new Set(profile.supportedOrientations).size !== profile.supportedOrientations.length)
@@ -132,12 +161,25 @@ export function validateDeviceProfile(profile: DeviceProfile): string[] {
 export function validateDeviceProfiles(profiles: DeviceProfile[]): true {
   const ids = new Set<string>();
   const slugs = new Set<string>();
+  const compatibleNames = new Set<string>();
+  const configurationOwners = new Map<string, string>();
   const failures: string[] = [];
   for (const profile of profiles) {
     if (ids.has(profile.id)) failures.push(`${profile.id}: duplicate id`);
     ids.add(profile.id);
     if (slugs.has(profile.slug)) failures.push(`${profile.id}: duplicate slug`);
     slugs.add(profile.slug);
+    for (const compatibleModel of profile.compatibleModels) {
+      const normalizedName = compatibleModel.name.trim().toLocaleLowerCase("en");
+      if (compatibleNames.has(normalizedName))
+        failures.push(`${profile.id}: duplicate compatible model ${compatibleModel.name}`);
+      compatibleNames.add(normalizedName);
+    }
+    const signature = wallpaperConfigurationSignature(profile);
+    const existingOwner = configurationOwners.get(signature);
+    if (existingOwner)
+      failures.push(`${profile.id}: duplicates wallpaper configuration ${existingOwner}`);
+    else configurationOwners.set(signature, profile.id);
     const errors = validateDeviceProfile(profile);
     if (errors.length) failures.push(`${profile.id}: ${errors.join(", ")}`);
   }

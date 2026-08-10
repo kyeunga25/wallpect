@@ -70,6 +70,20 @@ export function DeviceInformation() {
           <dd>{profile.metadata.lastVerified}</dd>
         </div>
       </dl>
+      {profile.compatibleModels.length > 1 ? (
+        <details className="accuracy-note compatible-models">
+          <summary>
+            {t("Compatible models")} · {profile.compatibleModels.length}
+          </summary>
+          <ul>
+            {profile.compatibleModels.map((item) => (
+              <li key={`${item.name}-${item.releaseYear}`}>
+                {item.name} · {item.releaseYear}
+              </li>
+            ))}
+          </ul>
+        </details>
+      ) : null}
       <details className="accuracy-note">
         <summary>
           <CircleAlert size={15} /> {t("Accuracy notes")}

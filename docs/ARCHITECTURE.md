@@ -1,6 +1,6 @@
 # Wallpect 架構 / Architecture
 
-本文件描述 Wallpect 0.2.3 已實作的系統邊界、資料生命週期及必須維持的工程不變條件。
+本文件描述 Wallpect 0.3.0 已實作的系統邊界、資料生命週期及必須維持的工程不變條件。
 
 ## 繁體中文
 
@@ -40,8 +40,8 @@ flowchart LR
 1. 預覽與匯出均呼叫 `renderWallpaper`；構圖平移採用目標 Canvas 的標準化座標，因此相同比例的預覽與完整輸出保持一致。
 2. 匯出 Canvas 只在操作期間存在，完成後會縮回 `1 × 1`；下載與上傳建立的 Object URL 必須撤銷。
 3. 圖片 bytes、檔名、Canvas 像素及 transform 不得寫入 `localStorage`、Cache Storage、網絡請求或分析服務。
-4. 可持久保存的資料只有 `wallpect:locale:v1` 及最多四個有效裝置 ID 的 `wallpect:recent-devices:v1`。舊 `wallpect:recent-devices` 會在讀取時清理、遷移並移除。
-5. 裝置資料留在 `src/data/devices`；推算或估算的幾何不得標示為 `verified`。
+4. 可持久保存的資料只有 `wallpect:locale:v1` 及最多四個有效裝置 ID 的 `wallpect:recent-devices:v1`。舊 storage key 及 0.3.0 前的個別型號 ID 會在讀取時清理、映射到標準配置、去除重複並寫回。
+5. 裝置資料留在 `src/data/devices`；具名型號只可在完整 wallpaper 幾何相同時合併，推算或估算的幾何不得標示為 `verified`。
 6. 缺少的離線導覽可回退到已快取的 `/`，但缺少的 script、style 或其他非導覽資源必須失敗，不得回傳 HTML shell。
 
 ### 資料生命週期
@@ -88,8 +88,8 @@ The diagram above intentionally has no data path from the selected image, Canvas
 1. Preview and export both call `renderWallpaper`. Pan values use normalized target-Canvas coordinates, preserving a composition between an aspect-matched preview and full output.
 2. The export Canvas exists only for the operation and is reduced to `1 × 1` afterward. Object URLs created for uploads and downloads must be revoked.
 3. Image bytes, filenames, Canvas pixels, and transforms must not enter `localStorage`, Cache Storage, network requests, or analytics.
-4. Persisted data is limited to `wallpect:locale:v1` and up to four valid device IDs in `wallpect:recent-devices:v1`. The legacy `wallpect:recent-devices` value is sanitized, migrated, and removed when read.
-5. Device data stays in `src/data/devices`; derived or estimated geometry must not be labelled `verified`.
+4. Persisted data is limited to `wallpect:locale:v1` and up to four valid device IDs in `wallpect:recent-devices:v1`. The legacy storage key and pre-0.3.0 per-model IDs are sanitized, mapped to canonical configurations, deduplicated, and written back when read.
+5. Device data stays in `src/data/devices`; named models may be consolidated only when their complete wallpaper geometry matches, and derived or estimated geometry must not be labelled `verified`.
 6. An unavailable offline navigation may fall back to cached `/`. A missing script, style, or other non-navigation asset must fail and must not receive the HTML shell.
 
 ### Data lifecycle
