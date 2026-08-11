@@ -1,4 +1,4 @@
-import { Component, useState, type ErrorInfo, type ReactNode } from "react";
+import { Component, useCallback, useEffect, useState, type ErrorInfo, type ReactNode } from "react";
 import { AdjustmentControls } from "../components/editor-controls/AdjustmentControls";
 import { DeviceSelector } from "../components/device-selector/DeviceSelector";
 import { DeviceInformation } from "../components/export/DeviceInformation";
@@ -42,26 +42,58 @@ class ErrorBoundary extends Component<
 
 function Workspace() {
   const [info, setInfo] = useState<InfoView>(null);
-  const { announcement } = useEditor();
+  const [previewFocused, setPreviewFocused] = useState(false);
+  const [mobilePanelExpanded, setMobilePanelExpanded] = useState(false);
+  const { announcement, setAnnouncement } = useEditor();
   const { t } = useI18n();
+  const changePreviewFocus = useCallback(
+    (focused: boolean) => {
+      setPreviewFocused(focused);
+      setAnnouncement(t(focused ? "Preview focus enabled." : "Editor controls restored."));
+    },
+    [setAnnouncement, t],
+  );
+  const changeMobilePanelSize = useCallback(
+    (expanded: boolean) => {
+      setMobilePanelExpanded(expanded);
+      setAnnouncement(
+        t(expanded ? "Editing panel expanded." : "Balanced mobile workspace restored."),
+      );
+    },
+    [setAnnouncement, t],
+  );
+
+  useEffect(() => {
+    if (!previewFocused) return;
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape" || document.querySelector("dialog[open]")) return;
+      event.preventDefault();
+      changePreviewFocus(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [changePreviewFocus, previewFocused]);
+
   return (
-    <div className="app-shell">
+    <div
+      className={`app-shell${previewFocused ? " is-preview-focused" : ""}${mobilePanelExpanded ? " is-mobile-panel-expanded" : ""}`}
+    >
       <Header onOpenInfo={setInfo} />
       <div className="workspace">
         <aside className="left-rail" aria-label={t("Image, device, and adjustment controls")}>
           <UploadPanel />
-          <DeviceSelector />
+          <DeviceSelector collapsible />
           <AdjustmentControls />
         </aside>
-        <DevicePreview />
+        <DevicePreview previewFocused={previewFocused} onPreviewFocusChange={changePreviewFocus} />
         <aside className="right-rail" aria-label={t("Overlay, device, and export controls")}>
           <OverlayPanel />
-          <DeviceInformation />
           <ExportPanel />
+          <DeviceInformation />
         </aside>
       </div>
       <MobileTabs />
-      <MobilePanel />
+      <MobilePanel expanded={mobilePanelExpanded} onExpandedChange={changeMobilePanelSize} />
       <Footer onOpenInfo={setInfo} />
       <InfoDialog view={info} onClose={() => setInfo(null)} />
       <div className="visually-hidden" aria-live="polite">

@@ -18,11 +18,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm audit --audit-level=high
       - run: npm run check
       - run: npm run format:check
       - run: npm run worker:check
         env:
           WRANGLER_LOG_PATH: /tmp/wallpect-wrangler-ci.log
+          WRANGLER_LOG_SANITIZE: "true"
+          WRANGLER_SEND_ERROR_REPORTS: "false"
+          WRANGLER_SEND_METRICS: "false"
 
   browser:
     runs-on: ubuntu-latest

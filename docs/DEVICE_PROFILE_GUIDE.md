@@ -20,7 +20,7 @@ Mac mini、Mac Studio 與 Mac Pro 沒有內建螢幕；它們應按實際連接�
 
 只有相同螢幕吋數或相同實體解析度並不足以合併。例如 iPhone 12 與 iPhone 13 的輸出同為 `1170 × 2532`，但瀏海幾何不同，因此保留兩個配置。相反，iPhone 14 Pro、iPhone 15、iPhone 15 Pro 與 iPhone 16 的畫布及遮擋幾何相同，所以共用一個選項。
 
-每個配置的 `compatibleModels` 保存完整型號名稱、推出年份及對角線；搜尋會讀取所有別名、年份、吋數、實體及邏輯解析度。`releaseYear` 代表該配置內最新型號的年份，只用於排序。合併配置的 `chassis` 是相對外框的代表值，不應被解讀為每個相容型號都具有完全相同的機身尺寸。
+每個配置的 `compatibleModels` 保存完整型號名稱、推出年份及對角線；單一搜尋欄會跨 iPhone、iPad、Mac 與 Apple 顯示器讀取所有別名、年份、吋數、實體及邏輯解析度。搜尋會正規化大小寫、空格、標點及 `×`／`x` 解析度寫法，並容許以不同次序輸入多個關鍵字。`releaseYear` 代表該配置內最新型號的年份，只用於排序。合併配置的 `chassis` 是相對外框的代表值，不應被解讀為每個相容型號都具有完全相同的機身尺寸。
 
 ### 舊 ID 遷移
 
@@ -68,7 +68,7 @@ Models may share one option only when all wallpaper-relevant data matches:
 
 Matching screen size or physical resolution alone is insufficient. For example, iPhone 12 and iPhone 13 both output `1170 × 2532`, but their notch geometry differs, so they remain separate configurations. iPhone 14 Pro, iPhone 15, iPhone 15 Pro, and iPhone 16 share the same canvas and obstruction geometry, so they use one option.
 
-Each configuration's `compatibleModels` records every full model name, release year, and diagonal. Search indexes all aliases, years, diagonals, physical resolutions, and logical resolutions. `releaseYear` is the newest compatible-model year and is used only for sorting. A grouped configuration's `chassis` is a representative frame value; it does not claim that every compatible model has identical body dimensions.
+Each configuration's `compatibleModels` records every full model name, release year, and diagonal. One search spans iPhone, iPad, Mac, and Apple displays and indexes all aliases, years, diagonals, physical resolutions, and logical resolutions. Search normalizes case, whitespace, punctuation, and `×`/`x` resolution forms, and accepts multiple terms in any order. `releaseYear` is the newest compatible-model year and is used only for sorting. A grouped configuration's `chassis` is a representative frame value; it does not claim that every compatible model has identical body dimensions.
 
 ### Previous-ID migration
 

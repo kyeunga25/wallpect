@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "wallpect-";
-const CACHE = `${CACHE_PREFIX}v3`;
+const CACHE = `${CACHE_PREFIX}v4`;
 const SHELL = ["/", "/assets/sample-aurora-wallpaper.png"];
 
 self.addEventListener("install", (event) => {

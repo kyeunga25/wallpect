@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useI18n } from "../../i18n/i18n";
 import { useEditor } from "../../state/editor-context";
+import type { OverlaySettings } from "../../types/editor";
 import { PanelSection, Toggle } from "../ui";
 
 const items = [
@@ -22,9 +23,24 @@ const items = [
   ["grid", "Composition grid", "Rule-of-thirds guide", Grid3X3],
 ] as const;
 
+const LOCK_PREVIEW_OVERLAYS = new Set<keyof OverlaySettings>([
+  "statusBar",
+  "clock",
+  "bottomActions",
+  "homeIndicator",
+  "menuBar",
+  "dock",
+]);
+
+function matchingPreviewMode(key: keyof OverlaySettings): "lock" | "safe" | null {
+  if (key === "safeArea") return "safe";
+  return LOCK_PREVIEW_OVERLAYS.has(key) ? "lock" : null;
+}
+
 export function OverlayPanel() {
   const { t } = useI18n();
-  const { profile, overlays, setOverlays } = useEditor();
+  const { profile, overlays, setOverlays, previewMode, setPreviewMode, setAnnouncement } =
+    useEditor();
   const visibleItems =
     profile.platform === "macOS"
       ? ([
@@ -35,6 +51,22 @@ export function OverlayPanel() {
           ["grid", "Composition grid", "Rule-of-thirds guide", Grid3X3],
         ] as const)
       : items;
+  const changeOverlay = (key: keyof OverlaySettings, checked: boolean) => {
+    setOverlays((current) => ({ ...current, [key]: checked }));
+    const nextPreviewMode = matchingPreviewMode(key);
+    if (!nextPreviewMode || previewMode === nextPreviewMode) return;
+    setPreviewMode(nextPreviewMode);
+    const modeLabel = t(
+      nextPreviewMode === "safe"
+        ? "Safe area"
+        : profile.platform === "macOS"
+          ? "Desktop"
+          : "Lock Screen",
+    );
+    setAnnouncement(
+      t("Opened {mode} preview so this guide change is visible.", { mode: modeLabel }),
+    );
+  };
   return (
     <PanelSection
       title={t("Overlays")}
@@ -58,7 +90,7 @@ export function OverlayPanel() {
             <Icon />
             <Toggle
               checked={overlays[key]}
-              onChange={(checked) => setOverlays((current) => ({ ...current, [key]: checked }))}
+              onChange={(checked) => changeOverlay(key, checked)}
               label={t(label)}
               description={t(description)}
             />
@@ -66,7 +98,9 @@ export function OverlayPanel() {
         ))}
       </div>
       <p className="control-help">
-        {t("Guides affect preview only unless “Export preview with guides” is enabled.")}
+        {t(
+          "Guide changes open the matching preview mode so the result is visible. They affect preview only unless “Export preview with guides” is enabled.",
+        )}
       </p>
     </PanelSection>
   );

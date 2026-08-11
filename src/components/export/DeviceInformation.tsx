@@ -1,5 +1,6 @@
 import { CircleAlert, ExternalLink } from "lucide-react";
 import { calculateCropPercent } from "../../core/fit";
+import { calculateImageEnlargement, formatImageEnlargement } from "../../core/image-quality";
 import { useI18n } from "../../i18n/i18n";
 import { useEditor } from "../../state/editor-context";
 import { PanelSection } from "../ui";
@@ -16,6 +17,16 @@ export function DeviceInformation() {
         transform,
       )
     : 0;
+  const enlargement = image
+    ? calculateImageEnlargement(
+        image.width,
+        image.height,
+        orientedDevice.outputWidth,
+        orientedDevice.outputHeight,
+        transform,
+      )
+    : null;
+  const formattedEnlargement = enlargement === null ? null : formatImageEnlargement(enlargement);
   const insets = orientedDevice.safeInsets;
   return (
     <PanelSection title={t("Device information")} className="device-information">
@@ -50,6 +61,10 @@ export function DeviceInformation() {
         <div>
           <dt>{t("Estimated crop")}</dt>
           <dd>{crop.toFixed(1)}%</dd>
+        </div>
+        <div>
+          <dt>{t("Estimated enlargement")}</dt>
+          <dd>{image ? (formattedEnlargement ?? t("No enlargement")) : "—"}</dd>
         </div>
         <div>
           <dt>{t("Safe-area insets")}</dt>
