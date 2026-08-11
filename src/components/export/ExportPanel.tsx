@@ -6,6 +6,11 @@ import {
   exportWallpaper,
   generateFilename,
 } from "../../core/export";
+import {
+  calculateImageEnlargement,
+  formatImageEnlargement,
+  getImageResolutionSummary,
+} from "../../core/image-quality";
 import { useI18n } from "../../i18n/i18n";
 import { useEditor } from "../../state/editor-context";
 import type { ExportFormat } from "../../types/editor";
@@ -50,6 +55,19 @@ export function ExportPanel({ compact = false }: { compact?: boolean }) {
       profile.slug,
     ],
   );
+  const imageEnlargement = image
+    ? calculateImageEnlargement(
+        image.width,
+        image.height,
+        orientedDevice.outputWidth,
+        orientedDevice.outputHeight,
+        transform,
+      )
+    : null;
+  const imageResolution =
+    imageEnlargement === null ? null : getImageResolutionSummary(imageEnlargement);
+  const formattedEnlargement =
+    imageEnlargement === null ? null : formatImageEnlargement(imageEnlargement);
 
   function setFormat(format: ExportFormat) {
     setExportSettings((current) => ({
@@ -107,44 +125,6 @@ export function ExportPanel({ compact = false }: { compact?: boolean }) {
 
   const content = (
     <>
-      <Segmented<ExportFormat>
-        value={exportSettings.format}
-        onChange={setFormat}
-        label={t("Export format")}
-        options={[
-          { value: "png", label: "PNG" },
-          { value: "jpeg", label: "JPEG" },
-          { value: "webp", label: "WebP" },
-        ]}
-      />
-      {exportSettings.format !== "png" ? (
-        <RangeControl
-          label={t("Quality")}
-          value={exportSettings.quality * 100}
-          min={40}
-          max={100}
-          step={1}
-          unit="%"
-          onChange={(quality) =>
-            setExportSettings((current) => ({ ...current, quality: quality / 100 }))
-          }
-        />
-      ) : null}
-      <label className="text-field">
-        <span>{t("Filename")}</span>
-        <input
-          value={exportSettings.filename}
-          onChange={(event) =>
-            setExportSettings((current) => ({ ...current, filename: event.target.value }))
-          }
-          onBlur={() =>
-            setExportSettings((current) => ({
-              ...current,
-              filename: ensureFilenameExtension(current.filename, current.format),
-            }))
-          }
-        />
-      </label>
       <div className="export-resolution">
         <FileImage />
         <span>
@@ -152,18 +132,14 @@ export function ExportPanel({ compact = false }: { compact?: boolean }) {
           <strong>
             {orientedDevice.outputWidth} × {orientedDevice.outputHeight} px
           </strong>
+          {imageResolution ? (
+            <small aria-label={t("Image resolution")}>
+              {t("Source image")} · {t(imageResolution.label)}
+              {formattedEnlargement ? ` · ${formattedEnlargement}` : ""}
+            </small>
+          ) : null}
         </span>
       </div>
-      <label className="guide-checkbox">
-        <input
-          type="checkbox"
-          checked={exportSettings.includeGuides}
-          onChange={(event) =>
-            setExportSettings((current) => ({ ...current, includeGuides: event.target.checked }))
-          }
-        />
-        <span>{t("Export preview with safe-area guides")}</span>
-      </label>
       <button
         type="button"
         className="primary-button"
@@ -179,6 +155,67 @@ export function ExportPanel({ compact = false }: { compact?: boolean }) {
           {result}
         </p>
       ) : null}
+      <details className="disclosure export-options" open={compact || undefined}>
+        <summary>
+          <strong>{t("Export options")}</strong>
+          <small>
+            {exportSettings.format.toUpperCase()} · {t("Format, filename, and guides")}
+          </small>
+        </summary>
+        <div className="disclosure-body export-options-body">
+          <Segmented<ExportFormat>
+            value={exportSettings.format}
+            onChange={setFormat}
+            label={t("Export format")}
+            options={[
+              { value: "png", label: "PNG" },
+              { value: "jpeg", label: "JPEG" },
+              { value: "webp", label: "WebP" },
+            ]}
+          />
+          {exportSettings.format !== "png" ? (
+            <RangeControl
+              label={t("Quality")}
+              value={exportSettings.quality * 100}
+              min={40}
+              max={100}
+              step={1}
+              unit="%"
+              onChange={(quality) =>
+                setExportSettings((current) => ({ ...current, quality: quality / 100 }))
+              }
+            />
+          ) : null}
+          <label className="text-field">
+            <span>{t("Filename")}</span>
+            <input
+              value={exportSettings.filename}
+              onChange={(event) =>
+                setExportSettings((current) => ({ ...current, filename: event.target.value }))
+              }
+              onBlur={() =>
+                setExportSettings((current) => ({
+                  ...current,
+                  filename: ensureFilenameExtension(current.filename, current.format),
+                }))
+              }
+            />
+          </label>
+          <label className="guide-checkbox">
+            <input
+              type="checkbox"
+              checked={exportSettings.includeGuides}
+              onChange={(event) =>
+                setExportSettings((current) => ({
+                  ...current,
+                  includeGuides: event.target.checked,
+                }))
+              }
+            />
+            <span>{t("Export preview with safe-area guides")}</span>
+          </label>
+        </div>
+      </details>
       <p className="export-tip">
         {t(
           profile.platform === "macOS"

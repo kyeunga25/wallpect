@@ -97,6 +97,8 @@ export function RangeControl({
   step,
   unit,
   onChange,
+  onInteractionStart,
+  onInteractionEnd,
 }: {
   label: string;
   value: number;
@@ -105,24 +107,38 @@ export function RangeControl({
   step: number;
   unit: string;
   onChange: (value: number) => void;
+  onInteractionStart?: () => void;
+  onInteractionEnd?: () => void;
 }) {
+  const displayValue = Math.round(value * 100) / 100;
+  const rawProgress = max > min ? ((value - min) / (max - min)) * 100 : 0;
+  const progress = Math.round(Math.min(100, Math.max(0, rawProgress)) * 100) / 100;
   return (
     <label className="range-control">
       <span className="range-label">
         <strong>{label}</strong>
         <output>
-          {Math.round(value * 100) / 100}
+          {displayValue}
           {unit}
         </output>
       </span>
       <input
         aria-label={label}
+        aria-valuetext={`${displayValue}${unit}`}
         type="range"
         value={value}
         min={min}
         max={max}
         step={step}
+        style={{
+          background: `linear-gradient(to right, var(--blue) 0 ${progress}%, #dce2ec ${progress}% 100%)`,
+        }}
         onChange={(event) => onChange(Number(event.target.value))}
+        onPointerDown={onInteractionStart}
+        onPointerUp={onInteractionEnd}
+        onPointerCancel={onInteractionEnd}
+        onLostPointerCapture={onInteractionEnd}
+        onBlur={onInteractionEnd}
       />
     </label>
   );

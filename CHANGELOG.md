@@ -4,6 +4,49 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-11
+
+### Added
+
+- Added a bounded 50-step undo/redo history for each device and orientation, with continuous drag, pinch, wheel, slider, and number-field edits grouped into meaningful steps.
+- Added visible composition-history controls, `Command`/`Ctrl` keyboard shortcuts, and one-pixel directional nudging on desktop and mobile.
+- Added an accessible original-composition comparison that leaves the edited transform and export result unchanged, then returns to the edit automatically when adjustment resumes.
+- Added a distraction-free focus preview that enlarges the existing Canvas on desktop and mobile, preserves the active composition, and restores the editor by button or `Escape`.
+- Added an accessible mobile workspace-size control that gives long editing panels more room and restores the balanced preview without changing the composition.
+- Added an immediate composition check beside Fill/Fit that explains the current crop in plain language on desktop and mobile.
+- Added an undoable “Show whole image” action for noticeable or heavy crop, and moved the composition check to the start of Adjust so the result is visible before manual controls.
+- Added a first-screen quick-position row for centering or moving an image by 10% of the active canvas, while retaining exact X/Y fields and one-pixel nudging.
+- Added undoable content-position controls that expose useful left/centre/right or top/middle/bottom alignments only when the image geometry has room to move, giving touch and keyboard users an alternative to repeated dragging.
+- Added a live-value Precise controls disclosure for exact X/Y, one-pixel nudging, and rotation on desktop and mobile.
+- Added source-pixel enlargement feedback to the composition check, device information, and exact-output summary using the same geometry as preview and export.
+- Added progressive export options so exact output and the primary download stay visible before optional format, filename, quality, and guide controls.
+- Added a one-tap preview orientation control that remains available in the mobile editing flow and distraction-free focus preview.
+
+### Changed
+
+- Made device search span iPhone, iPad, Mac, and Apple display configurations without requiring users to choose the correct category first.
+- Kept desktop and mobile device selectors aligned with the selected device family and improved pasted-resolution and multi-term matching.
+- Kept desktop adjustment controls in reach by collapsing the full device browser until requested and automatically returning to the compact device summary after selection; the dedicated mobile device panel remains fully expanded.
+- Increased key mobile editor controls to comfortable 44 px touch targets while preserving the compact scrollable workspace.
+- Replaced the non-interactive mobile sheet grabber with explicit “More controls” and “More preview” actions, and kept the header within 320 px-wide viewports with 44 px language and menu targets.
+- Made Adjust the mobile starting panel and return target after successful image or device selection; removing the image returns to Image.
+- Reordered the desktop reference rail to keep the common export action within the first 1280 × 720 viewport while retaining complete device information below it.
+- Kept solid, transparent, and blurred-extension backgrounds close to Fill/Fit and the new content-position controls so uncovered areas can be handled immediately on desktop and mobile.
+- Made estimated crop account for zoom, normalized position, and rotation by clipping the transformed image bounds against the wallpaper canvas.
+- Replaced the generic loaded-image icon with the active local thumbnail and reset all per-device/orientation transforms and histories when the image is replaced or removed.
+- Made zoom, rotation, and export-quality tracks reflect their actual range position instead of a fixed fill, with matching unit-aware accessible values.
+- Reordered common adjustment controls ahead of advanced precision fields and folded the latter by default to reduce scanning and scrolling without removing editing accuracy.
+- Made mode-specific overlay changes open their matching Lock Screen/Desktop or Safe area preview automatically, while keeping the composition grid and device cutout independent of preview mode.
+
+### Security
+
+- Kept local thumbnails on bundled same-origin or browser-generated `blob:` URLs; enlargement feedback and content positioning use dimensions and rendering geometry without pixel analysis, persistence, or image network requests.
+- Added a deterministic public-safety check for high-confidence credentials, private paths, personal email addresses, Cloudflare resource identifiers, sensitive file types, and generated/private state without printing matched values.
+- Added deployed third-party licence notices and a privacy-safe security reporting policy that uses GitHub private vulnerability reporting instead of a public email address.
+- Disabled Wrangler usage metrics, deployment dependency metadata instrumentation, and Worker observability explicitly in the project configuration.
+- Updated the affected Vite, jsdom, and Wrangler development dependency chains so both production-only and complete dependency audits report no known vulnerabilities.
+- Added a CI gate for high- or critical-severity dependency advisories and made the Wrangler CI privacy settings explicit.
+
 ## [0.3.0] - 2026-08-10
 
 ### Added
@@ -114,7 +157,8 @@ All notable changes to Wallpect are recorded in this file. The format follows [K
 - Uploaded images remain in browser memory and are not sent to an upload API or analytics service.
 - Local secrets, credentials, build output, browser reports, and editor/OS metadata are excluded from version control.
 
-[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/kyeunga25/wallpect/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/kyeunga25/wallpect/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/kyeunga25/wallpect/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/kyeunga25/wallpect/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/kyeunga25/wallpect/compare/v0.2.1...v0.2.2

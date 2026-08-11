@@ -13,6 +13,7 @@ export interface ImageTransform {
 
 export interface ImageAsset {
   source: CanvasImageSource;
+  previewUrl: string;
   width: number;
   height: number;
   name: string;

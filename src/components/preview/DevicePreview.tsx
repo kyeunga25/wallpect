@@ -1,4 +1,15 @@
-import { Camera, Flashlight, Frame, Hand, Maximize, Monitor, Move, ZoomIn } from "lucide-react";
+import {
+  Camera,
+  Eye,
+  Flashlight,
+  Hand,
+  Maximize2,
+  Minimize2,
+  Monitor,
+  Move,
+  RotateCw,
+  ZoomIn,
+} from "lucide-react";
 import type { CSSProperties } from "react";
 import { orientRect } from "../../core/transforms";
 import { useI18n } from "../../i18n/i18n";
@@ -141,17 +152,37 @@ function MacOverlay() {
   );
 }
 
-export function DevicePreview() {
+export function DevicePreview({
+  previewFocused,
+  onPreviewFocusChange,
+}: {
+  previewFocused: boolean;
+  onPreviewFocusChange: (focused: boolean) => void;
+}) {
   const { t } = useI18n();
-  const { profile, orientedDevice, previewMode, setPreviewMode, frameVisible, setFrameVisible } =
-    useEditor();
+  const {
+    image,
+    profile,
+    orientedDevice,
+    orientation,
+    setOrientation,
+    previewMode,
+    setPreviewMode,
+    frameVisible,
+    setFrameVisible,
+    showOriginalComposition,
+    setShowOriginalComposition,
+  } = useEditor();
   const isMac = profile.platform === "macOS";
   const isMacBook = profile.category === "macbook";
   const ratio = orientedDevice.outputWidth / orientedDevice.outputHeight;
   const cornerX = `${(profile.display.cornerRadiusPx / orientedDevice.outputWidth) * 100}%`;
   const cornerY = `${(profile.display.cornerRadiusPx / orientedDevice.outputHeight) * 100}%`;
+  const alternateOrientation = profile.supportedOrientations.find(
+    (supportedOrientation) => supportedOrientation !== orientation,
+  );
   return (
-    <main className="preview-stage">
+    <main className={`preview-stage${showOriginalComposition ? " is-comparing-original" : ""}`}>
       <div className="stage-toolbar">
         <Segmented
           value={previewMode}
@@ -163,15 +194,29 @@ export function DevicePreview() {
             { value: "safe", label: t("Safe area") },
           ]}
         />
-        <Segmented
-          value={frameVisible ? "frame" : "screen"}
-          onChange={(value) => setFrameVisible(value === "frame")}
-          label={t("Device frame visibility")}
-          options={[
-            { value: "frame", label: t("Frame") },
-            { value: "screen", label: t("Screen only") },
-          ]}
-        />
+        <div className="stage-toolbar-actions">
+          <Segmented
+            value={frameVisible ? "frame" : "screen"}
+            onChange={(value) => setFrameVisible(value === "frame")}
+            label={t("Device frame visibility")}
+            options={[
+              { value: "frame", label: t("Frame") },
+              { value: "screen", label: t("Screen only") },
+            ]}
+          />
+          <button
+            type="button"
+            className="composition-compare-button compact-button"
+            aria-label={t("Compare original composition")}
+            aria-pressed={showOriginalComposition}
+            title={t("Compare original composition")}
+            disabled={!image}
+            onClick={() => setShowOriginalComposition(!showOriginalComposition)}
+          >
+            <Eye size={16} />
+            <span>{t(showOriginalComposition ? "Edited" : "Original")}</span>
+          </button>
+        </div>
       </div>
       <div
         className={`device-scaler ${isMac ? `is-mac ${isMacBook ? "is-macbook" : "is-desktop-mac"}` : profile.category === "ipad" ? "is-ipad" : "is-phone"} is-${orientedDevice.activeOrientation} ${frameVisible ? "has-frame" : "screen-only"}`}
@@ -218,28 +263,55 @@ export function DevicePreview() {
           ) : null}
         </div>
       </div>
-      <div className="stage-hint">
-        <Hand size={17} />
-        <span>{t("Drag to reposition")}</span>
-        <ZoomIn size={17} />
-        <span>{t("Scroll or pinch to zoom")}</span>
-        <Move size={17} />
-        <span>{t("Arrow keys to nudge")}</span>
+      <div className={`stage-hint${showOriginalComposition ? " is-comparing" : ""}`}>
+        {showOriginalComposition ? (
+          <>
+            <Eye size={17} />
+            <strong>{t("Original composition")}</strong>
+            <span>{t("Preview only — edited values and export remain unchanged.")}</span>
+          </>
+        ) : (
+          <>
+            <Hand size={17} />
+            <span>{t("Drag to reposition")}</span>
+            <ZoomIn size={17} />
+            <span>{t("Scroll or pinch to zoom")}</span>
+            <Move size={17} />
+            <span>{t("Arrow keys to nudge")}</span>
+          </>
+        )}
       </div>
-      <div className="mobile-stage-tools" aria-hidden="true">
-        <button>
-          <Move />
+      {alternateOrientation ? (
+        <button
+          type="button"
+          className="preview-orientation-button compact-button"
+          aria-label={t("Switch preview to {orientation}", {
+            orientation: t(alternateOrientation === "portrait" ? "Portrait" : "Landscape"),
+          })}
+          title={t("Switch preview to {orientation}", {
+            orientation: t(alternateOrientation === "portrait" ? "Portrait" : "Landscape"),
+          })}
+          onClick={() => setOrientation(alternateOrientation)}
+        >
+          <RotateCw size={17} aria-hidden="true" />
+          <span>{t(alternateOrientation === "portrait" ? "Portrait" : "Landscape")}</span>
         </button>
-        <button>
-          <ZoomIn />
-        </button>
-        <button>
-          <Maximize />
-        </button>
-        <button>
-          <Frame />
-        </button>
-      </div>
+      ) : null}
+      <button
+        type="button"
+        className="preview-focus-button compact-button"
+        aria-label={t(previewFocused ? "Return to editor" : "Focus preview")}
+        aria-pressed={previewFocused}
+        aria-keyshortcuts={previewFocused ? "Escape" : undefined}
+        title={t(
+          previewFocused ? "Return to editor" : "Enlarge the preview and hide editing panels.",
+        )}
+        onClick={() => onPreviewFocusChange(!previewFocused)}
+      >
+        {previewFocused ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
+        <span>{t(previewFocused ? "Return to editor" : "Focus preview")}</span>
+        {previewFocused ? <kbd aria-hidden="true">Esc</kbd> : null}
+      </button>
     </main>
   );
 }

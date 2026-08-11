@@ -1,4 +1,4 @@
-import { ImagePlus, LockKeyhole, Replace, Trash2, UploadCloud } from "lucide-react";
+import { LockKeyhole, Replace, Trash2, UploadCloud } from "lucide-react";
 import { useId, useRef, useState, type DragEvent } from "react";
 import { decodeImageFile } from "../../core/image-decoder";
 import { useI18n } from "../../i18n/i18n";
@@ -17,7 +17,7 @@ export function UploadPanel() {
   const inputRef = useRef<HTMLInputElement>(null);
   const loadingRef = useRef(false);
   const { t } = useI18n();
-  const { image, setImage, setAnnouncement } = useEditor();
+  const { image, setImage, setAnnouncement, setMobileTab } = useEditor();
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,8 +29,16 @@ export function UploadPanel() {
     setError("");
     try {
       const asset = await decodeImageFile(file);
-      setImage(asset);
-      setAnnouncement(t("{name} loaded locally.", { name: file.name }));
+      const replaced = setImage(asset);
+      setMobileTab("adjust");
+      setAnnouncement(
+        t(
+          replaced
+            ? "{name} loaded locally. Composition reset for the new image."
+            : "{name} loaded locally.",
+          { name: file.name },
+        ),
+      );
     } catch (reason) {
       setError(t(reason instanceof Error ? reason.message : "The image could not be loaded."));
     } finally {
@@ -47,6 +55,12 @@ export function UploadPanel() {
     void load(event.dataTransfer.files[0]);
   }
 
+  function remove() {
+    setImage(null);
+    setMobileTab("image");
+    setAnnouncement(t("Image removed. Composition cleared."));
+  }
+
   return (
     <PanelSection title={t("Image")} className="upload-section">
       <input
@@ -61,8 +75,12 @@ export function UploadPanel() {
       />
       {image ? (
         <div className="image-summary">
-          <div className="image-thumb" aria-hidden="true">
-            <ImagePlus />
+          <div className="image-thumb" aria-hidden="true" style={{ overflow: "hidden" }}>
+            <img
+              src={image.previewUrl}
+              alt=""
+              style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+            />
           </div>
           <div className="image-meta">
             <strong title={image.name}>{image.name}</strong>
@@ -88,7 +106,7 @@ export function UploadPanel() {
             aria-label={t("Remove image")}
             title={t("Remove image")}
             disabled={loading}
-            onClick={() => setImage(null)}
+            onClick={remove}
           >
             <Trash2 size={16} />
           </button>
@@ -116,7 +134,8 @@ export function UploadPanel() {
         </p>
       ) : null}
       <p className="privacy-note">
-        <LockKeyhole size={14} /> {t("Your image never leaves this browser.")}
+        <LockKeyhole size={14} />{" "}
+        {t("Your image never leaves this browser. Replacing it starts a fresh composition.")}
       </p>
     </PanelSection>
   );

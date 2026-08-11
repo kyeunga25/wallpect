@@ -1,7 +1,7 @@
 # Wallpect 條款、私隱與資料政策
 
-生效日期：2026 年 8 月 10 日
-適用版本：0.3.0
+生效日期：2026 年 8 月 11 日
+適用版本：0.4.0
 
 > 本文件記錄 Wallpect 測試版目前的產品行為及維護規則，只屬一般資料，並非法律意見。若加入收費、帳戶、廣告、分析、個人資料表格、使用者內容託管或新司法管轄區，必須先接受獨立法律審閱。
 
@@ -26,6 +26,8 @@
 
 Wallpect 前端不設定廣告 Cookie、不載入客戶端分析、不建立帳戶、不收集表格資料，也不把使用者選擇的圖片傳送到 Cloudflare。正常瀏覽公開網站仍會產生網絡請求；不應把「圖片不上傳」誤寫成「託管供應商完全不處理任何網絡資料」。
 
+Repository 設定會關閉 Wrangler usage metrics、deployment dependency metadata instrumentation 及 Worker observability。這不會阻止 Cloudflare 按其服務條款及私隱政策處理傳送公開網站所需的一般網絡與路由資料。
+
 0.3.0 會在首次讀取時把舊 `wallpect:recent-devices` key 及 0.3.0 前按個別型號保存的裝置 ID，映射到新的整合配置 ID、移除重複值，並把最多四個有效 ID 寫入 `wallpect:recent-devices:v1`；舊 key 隨後會被移除。遷移不會加入圖片、檔名、構圖或其他資料；若 storage 不可用，編輯器仍可運作而不保存偏好。
 
 參考：[Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/)。
@@ -49,8 +51,10 @@ Apple 網站條款限制複製、重新發佈、鏡像及自動擷取其內容�
 - `Wallpect` 不包含 Apple 商標，品牌視覺不使用 Apple Logo、產品圖片、官方圖示或仿製 Apple 網站 trade dress。
 - Apple、iPhone、iPad、Mac、MacBook、iMac 及相關名稱只用於識別相容裝置設定檔，顯著程度低於 Wallpect 品牌。
 - Wallpect 是獨立工具，未獲 Apple Inc. 授權、贊助或背書。
+- 內建示範圖是合成的項目素材，並保留其內容真實性 provenance；當中不含 Apple 產品素材或使用者圖片。
 - 使用者圖片的權利不會因本機處理而轉移給 Wallpect；使用者仍須確保自己有權使用圖片。
 - Wallpect 程式碼按 repository 的 [MIT License](../LICENSE) 發布；MIT License 不授予第三方商標、資料或使用者圖片的權利。
+- Production browser bundle 內第三方套件的授權文字見[第三方授權通知](../public/THIRD_PARTY_NOTICES.txt)；build 與測試工具仍受各自套件附帶的授權規管。
 
 參考：[Apple 使用商標和版權的指引](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html)。
 
@@ -85,8 +89,8 @@ Apple 網站條款限制複製、重新發佈、鏡像及自動擷取其內容�
 
 # Wallpect Terms, Privacy, and Data Policy
 
-Effective date: 10 August 2026
-Applies to version: 0.3.0
+Effective date: 11 August 2026
+Applies to version: 0.4.0
 
 > This document records the current behavior and maintenance rules of the Wallpect beta. It is general information, not legal advice. Independent legal review is required before adding payments, accounts, advertising, analytics, personal-data forms, hosted user content, or new jurisdictions.
 
@@ -107,6 +111,8 @@ On first read, version 0.3.0 maps both the legacy `wallpect:recent-devices` key 
 
 The site is hosted on Cloudflare. Requests for public files pass through Cloudflare, which may process IP addresses, routing data, system configuration, and request metadata under its privacy policy. The app itself does not load advertising cookies, client-side analytics, account systems, or personal-data forms.
 
+The repository configuration disables Wrangler usage metrics, deployment dependency metadata instrumentation, and Worker observability. This does not prevent Cloudflare from processing ordinary network and routing data needed to deliver the public site under its service terms and privacy policy.
+
 Reference: [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/privacy/).
 
 ## 3. Device data and source rules
@@ -114,6 +120,10 @@ Reference: [Cloudflare Privacy Policy](https://www.cloudflare.com/policies/priva
 Profiles are manually curated from linked public `https://support.apple.com` specification and support pages. Wallpect does not call an Apple or third-party device-data API at runtime, scrape or mirror Apple websites, or reproduce Apple articles, product images, logos, interface assets, or marketing material. Derived geometry remains clearly labelled and is never promoted to verified without evidence.
 
 References: [Apple Website Terms of Use](https://www.apple.com/legal/internet-services/terms/site.html), [Apple trademark and copyright guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html).
+
+The bundled demo is synthetic project artwork with its content-authenticity provenance preserved; it contains no Apple product asset or user image.
+
+Wallpect source is released under the repository's [MIT License](../LICENSE). Licence text for third-party packages included in the production browser bundle is published in the [third-party notices](../public/THIRD_PARTY_NOTICES.txt); build and test tools remain governed by the licences distributed with their packages.
 
 ## 4. Third-party and API gate
 

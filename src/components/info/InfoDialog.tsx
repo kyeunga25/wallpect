@@ -125,7 +125,7 @@ function DeviceContent({
 function LegalContent({ t }: { t: Translate }) {
   return (
     <div className="dialog-body legal-sections">
-      <p className="legal-effective">{t("Effective date: 10 August 2026")}</p>
+      <p className="legal-effective">{t("Effective date: 11 August 2026")}</p>
       <section>
         <h3>{t("Terms of use")}</h3>
         <p>
@@ -213,6 +213,9 @@ function LegalContent({ t }: { t: Translate }) {
         </a>
         <a href="https://www.cloudflare.com/policies/privacy/" target="_blank" rel="noreferrer">
           {t("Cloudflare privacy policy")} <ExternalLink />
+        </a>
+        <a href="/THIRD_PARTY_NOTICES.txt" target="_blank" rel="noreferrer">
+          {t("Open-source licence notices")} <ExternalLink />
         </a>
         <a href="https://github.com/kyeunga25/wallpect/issues" target="_blank" rel="noreferrer">
           {t("Report a problem on GitHub")} <ExternalLink />

@@ -26,9 +26,25 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 ### Highlights
 
 - 47 distinct canvas configurations: 19 iPhone, 11 iPad, and 17 Mac/Apple-display configurations covering 191 named models from 2007–2026
-- Devices with the same wallpaper canvas and obstruction geometry share one option; every model name, year, diagonal, and resolution remains searchable
+- Devices with the same wallpaper canvas and obstruction geometry share one option; one search spans iPhone, iPad, and Mac model names, years, diagonals, and resolutions
+- The desktop device browser stays compact after selection so composition controls remain in reach; the mobile device tab keeps the complete searchable catalogue visible
 - Local PNG, JPEG, and WebP decoding, limited to 30 MB, 12,000 px on the longest edge, and 72 megapixels
+- The bundled demo is synthetic project artwork with its content-authenticity provenance preserved; it contains no Apple product asset or user image
+- The image card shows the active local thumbnail; replacing an image clears old composition histories for every device and orientation so a previous image's position is not reused accidentally
 - Portrait and landscape compositions stored independently for each device
+- Per-device/orientation undo and redo with grouped gestures, keyboard shortcuts, and one-pixel position nudging
+- First-screen quick positioning to center an image or move it by 10% of the active canvas without entering X/Y values
+- Contextual **Content position** controls expose useful left/centre/right or top/middle/bottom alignments when the image has room to move, bringing people, logos, or text into view without repeated dragging; every alignment remains undoable
+- A live-value **Precise controls** disclosure keeps exact X/Y, one-pixel nudging, and rotation available without crowding the everyday adjustment flow
+- Zoom, rotation, and export-quality tracks fill to the actual current value and expose the same value with its unit to assistive technology
+- One-tap original-composition comparison without replacing edited values or export output
+- Distraction-free focus preview that temporarily hides editing panels without changing the composition
+- One-tap portrait/landscape switching directly on the preview, including while Adjust or focus preview remains active
+- Mode-specific guide switches automatically open the matching Lock Screen/Desktop or Safe area preview so every change is immediately visible; the composition grid and device cutout remain mode-independent
+- A mobile “More controls / More preview” switch for balancing long editing panels against the live preview, including compact 320 px-wide screens
+- Mobile opens directly on Adjust and returns there after a local image or device is selected, avoiding repeated switches between a long catalogue and composition controls
+- First-in-panel plain-language crop and source-pixel enlargement feedback on desktop and mobile, with undoable **Show whole image** and content-position actions for either preserving the whole source or choosing which part to show; solid, transparent, and blurred-extension choices remain nearby for uncovered areas
+- Exact output and the primary download remain in the first desktop viewport at common MacBook heights; format, filename, and guide controls remain available under Export options
 - Solid, transparent, or blurred-extension backgrounds
 - Shared transform and Canvas rendering calculations for preview and export
 - Responsive desktop and mobile workspaces
@@ -39,12 +55,13 @@ Wallpect helps you compose an image for a selected Apple device, inspect likely 
 ## Try it
 
 1. Open [wallpect.k-y.cc](https://wallpect.k-y.cc).
-2. Use the bundled sample or choose an image from your device.
-3. Select a device profile and orientation.
-4. Adjust the composition and enable the guides you want to inspect.
-5. Choose PNG, JPEG, or WebP and export at the displayed resolution.
+2. Use the bundled sample or choose an image from your device. The image-card thumbnail confirms what is being edited. Choosing another image starts a fresh composition instead of reusing the previous image's offsets or undo history.
+3. Select a device profile and orientation. On desktop, use **Change** to reopen the full device browser whenever needed. Mobile returns to **Adjust** after an image or device is selected; use the rotate action on the preview to switch orientation without leaving the current editing view.
+4. Check the current crop and estimated enlargement at the start of **Adjust**. If important content is heavily cropped, use **Show whole image** for an undoable automatic fit or **Content position** to reveal the source's left/centre/right or top/middle/bottom without repeated dragging. Both use dimensions and shared rendering geometry only; they do not analyse the image. Choose the nearby solid, transparent, or blurred-extension background for uncovered areas. Use **Quick position** to center the image or move it in 10% steps when composing manually. Open **Precise controls** for exact X/Y values, one-pixel nudging, and rotation; its summary keeps the current values visible while folded. Drag and undo/redo remain directly available. On mobile, use **More controls** when a long panel needs space, compare the original framing, or enter focus preview as needed.
+5. In **Overlays**, change Safe area, lock-screen, menu-bar, or Dock guides directly; Wallpect opens the matching preview mode so you can see the result immediately. The composition grid and device cutout stay in the current mode.
+6. Use **Download wallpaper** below the exact output to keep the current format. Open **Export options** first when you need JPEG, WebP, a custom filename, or exported guides.
 
-Your image stays in browser memory and is released when it is replaced, the page is refreshed, or the page is closed. Only the selected locale (`wallpect:locale:v1`) and up to four recent device identifiers (`wallpect:recent-devices:v1`) are saved in versioned `localStorage`. Normal requests for public site files still pass through Cloudflare, but they do not contain your selected image bytes.
+Your image and its thumbnail stay in browser memory and are released when the image is replaced or removed, the page is refreshed, or the page is closed. The enlargement estimate is calculated only from image dimensions, the selected canvas, and the shared rendering geometry; it does not inspect or transmit image pixels. Only the selected locale (`wallpect:locale:v1`) and up to four recent device identifiers (`wallpect:recent-devices:v1`) are saved in versioned `localStorage`. Normal requests for public site files still pass through Cloudflare, but they do not contain your selected image bytes.
 
 The website provides directly accessible Traditional Chinese and English privacy, terms, disclaimer, and data-source notices. Maintenance and third-party source/API rules are documented in the [Terms, Privacy, and Data Policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md).
 
@@ -134,7 +151,7 @@ You can self-deploy a fork to your own Cloudflare account without a database, st
    PLAYWRIGHT_BASE_URL=https://<your-worker-url> npm run test:e2e
    ```
 
-Wrangler credentials stay outside the repository. Never add API tokens, account or zone identifiers, deployment IDs, private domains, production data, local paths, logs, or screenshots containing private content to source control. The [deployment and self-hosting guide](docs/DEPLOYMENT.md) contains the safe configuration template, Workers Builds setup, Custom Domain steps, validation checklist, and rollback procedure. The [release guide](docs/RELEASING.md) covers the versioned release workflow.
+Wrangler credentials stay outside the repository. Never add API tokens, account or zone identifiers, deployment IDs, private domains, production data, local paths, logs, or screenshots containing private content to source control. The checked-in configuration explicitly disables Wrangler usage metrics, deployment dependency metadata instrumentation, and Worker observability. The [deployment and self-hosting guide](docs/DEPLOYMENT.md) contains the safe configuration template, Workers Builds setup, Custom Domain steps, validation checklist, and rollback procedure. The [release guide](docs/RELEASING.md) covers the versioned release workflow.
 
 ## Architecture
 
@@ -147,7 +164,7 @@ Wrangler credentials stay outside the repository. Never add API tokens, account 
 | `src/i18n`         | Locale selection, persistence, and translations               |
 | `tests`            | Unit, integration, and end-to-end coverage                    |
 
-Preview and export both call `renderWallpaper`. Pan offsets use the target canvas's normalized coordinate space, so a scaled preview and full-resolution export preserve the same composition.
+Preview and export both call `renderWallpaper`. Pan offsets use the target canvas's normalized coordinate space, so a scaled preview and full-resolution export preserve the same composition. Composition check derives the visible area from those same image dimensions, canvas dimensions, and transforms without creating another rendering state.
 
 See the [architecture document](docs/ARCHITECTURE.md) for the runtime boundary, local-data lifecycle, storage migration, offline behavior, and verification invariants.
 
@@ -159,6 +176,8 @@ See the [architecture document](docs/ARCHITECTURE.md) for the runtime boundary, 
 - [Deployment and self-hosting guide](docs/DEPLOYMENT.md)
 - [Release guide](docs/RELEASING.md)
 - [Legal, privacy, and data policy](docs/LEGAL_PRIVACY_AND_DATA_POLICY.md)
+- [Security policy](SECURITY.md)
+- [Production third-party licence notices](public/THIRD_PARTY_NOTICES.txt)
 - [Changelog](CHANGELOG.md)
 
 ## Contributing
@@ -167,7 +186,7 @@ Issues and focused pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTIN
 
 ## License and disclaimer
 
-Wallpect is available under the [MIT License](LICENSE).
+Wallpect is available under the [MIT License](LICENSE). Third-party code included in the production browser bundle is listed with its applicable licence text in the [third-party notices](public/THIRD_PARTY_NOTICES.txt).
 
 Wallpect is an independent tool. It is not affiliated with or endorsed by Apple Inc. Apple product names are used only to identify compatible device profiles.
 

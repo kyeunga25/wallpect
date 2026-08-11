@@ -30,6 +30,7 @@ export async function decodeImageFile(file: File): Promise<ImageAsset> {
     }
     return {
       source: image,
+      previewUrl: objectUrl,
       width: image.naturalWidth,
       height: image.naturalHeight,
       name: file.name,
@@ -52,6 +53,7 @@ export async function decodeBundledImage(url: string): Promise<ImageAsset> {
   await image.decode();
   return {
     source: image,
+    previewUrl: url,
     width: image.naturalWidth,
     height: image.naturalHeight,
     name: "sample-aurora-wallpaper.png",

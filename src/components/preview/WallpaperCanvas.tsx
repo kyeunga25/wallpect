@@ -1,8 +1,9 @@
 import { useEffect, useRef, type KeyboardEvent, type PointerEvent, type WheelEvent } from "react";
-import { calculatePinchScale, clampTransform } from "../../core/fit";
+import { calculatePinchScale, clampTransform, clampTransformForImage } from "../../core/fit";
 import { renderWallpaper } from "../../core/renderer";
 import { useI18n } from "../../i18n/i18n";
 import { useEditor } from "../../state/editor-context";
+import { DEFAULT_TRANSFORM } from "../../types/editor";
 
 type DragState = { pointerId: number; x: number; y: number } | null;
 type PinchState = { distance: number; scale: number } | null;
@@ -19,15 +20,41 @@ export function WallpaperCanvas() {
   const dragRef = useRef<DragState>(null);
   const pointersRef = useRef(new Map<number, { x: number; y: number }>());
   const pinchRef = useRef<PinchState>(null);
+  const wheelCommitTimerRef = useRef<number | null>(null);
   const {
     image,
     transform,
+    showOriginalComposition,
     setTransform,
+    beginTransformEdit,
+    commitTransformEdit,
     backgroundMode,
     backgroundColor,
+    orientedDevice,
     resetTransform,
     centerTransform,
   } = useEditor();
+  const previewTransform = showOriginalComposition ? DEFAULT_TRANSFORM : transform;
+  const clampForCurrentImage = (next: typeof transform) =>
+    image && image.width > 0 && image.height > 0
+      ? clampTransformForImage(
+          image.width,
+          image.height,
+          orientedDevice.outputWidth,
+          orientedDevice.outputHeight,
+          next,
+        )
+      : clampTransform(next);
+
+  useEffect(
+    () => () => {
+      if (wheelCommitTimerRef.current !== null) {
+        window.clearTimeout(wheelCommitTimerRef.current);
+      }
+      commitTransformEdit();
+    },
+    [commitTransformEdit],
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -48,7 +75,7 @@ export function WallpaperCanvas() {
           width,
           height,
           image,
-          transform,
+          transform: previewTransform,
           backgroundMode,
           backgroundColor,
         });
@@ -57,9 +84,14 @@ export function WallpaperCanvas() {
     observer.observe(wrap);
     draw();
     return () => observer.disconnect();
-  }, [backgroundColor, backgroundMode, image, transform]);
+  }, [backgroundColor, backgroundMode, image, previewTransform]);
 
   function pointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (wheelCommitTimerRef.current !== null) {
+      window.clearTimeout(wheelCommitTimerRef.current);
+      wheelCommitTimerRef.current = null;
+    }
+    if (pointersRef.current.size === 0) beginTransformEdit();
     event.currentTarget.setPointerCapture(event.pointerId);
     pointersRef.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
     dragRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY };
@@ -83,7 +115,7 @@ export function WallpaperCanvas() {
         pinchRef.current.distance,
         distance,
       );
-      setTransform((current) => ({ ...current, scale: nextScale }));
+      setTransform((current) => clampForCurrentImage({ ...current, scale: nextScale }));
       return;
     }
     if (!previous || previous.pointerId !== event.pointerId) return;
@@ -92,7 +124,7 @@ export function WallpaperCanvas() {
     const deltaY = (event.clientY - previous.y) / bounds.height;
     dragRef.current = { ...previous, x: event.clientX, y: event.clientY };
     setTransform((current) =>
-      clampTransform({
+      clampForCurrentImage({
         ...current,
         translateX: current.translateX + deltaX,
         translateY: current.translateY + deltaY,
@@ -105,12 +137,23 @@ export function WallpaperCanvas() {
     pinchRef.current = null;
     const remaining = [...pointersRef.current.entries()][0];
     dragRef.current = remaining ? { pointerId: remaining[0], ...remaining[1] } : null;
+    if (!remaining) commitTransformEdit();
   }
 
   function wheel(event: WheelEvent<HTMLDivElement>) {
     event.preventDefault();
+    beginTransformEdit();
     const factor = Math.exp(-event.deltaY * 0.0015);
-    setTransform((current) => clampTransform({ ...current, scale: current.scale * factor }));
+    setTransform((current) => clampForCurrentImage({ ...current, scale: current.scale * factor }));
+    if (wheelCommitTimerRef.current !== null) {
+      window.clearTimeout(wheelCommitTimerRef.current);
+    }
+    if (pointersRef.current.size === 0) {
+      wheelCommitTimerRef.current = window.setTimeout(() => {
+        wheelCommitTimerRef.current = null;
+        commitTransformEdit();
+      }, 180);
+    }
   }
 
   function keyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -123,24 +166,24 @@ export function WallpaperCanvas() {
       event.preventDefault();
     if (event.key === "ArrowLeft")
       setTransform((current) =>
-        clampTransform({ ...current, translateX: current.translateX - step }),
+        clampForCurrentImage({ ...current, translateX: current.translateX - step }),
       );
     if (event.key === "ArrowRight")
       setTransform((current) =>
-        clampTransform({ ...current, translateX: current.translateX + step }),
+        clampForCurrentImage({ ...current, translateX: current.translateX + step }),
       );
     if (event.key === "ArrowUp")
       setTransform((current) =>
-        clampTransform({ ...current, translateY: current.translateY - step }),
+        clampForCurrentImage({ ...current, translateY: current.translateY - step }),
       );
     if (event.key === "ArrowDown")
       setTransform((current) =>
-        clampTransform({ ...current, translateY: current.translateY + step }),
+        clampForCurrentImage({ ...current, translateY: current.translateY + step }),
       );
     if (["+", "="].includes(event.key))
-      setTransform((current) => clampTransform({ ...current, scale: current.scale * 1.05 }));
+      setTransform((current) => clampForCurrentImage({ ...current, scale: current.scale * 1.05 }));
     if (event.key === "-")
-      setTransform((current) => clampTransform({ ...current, scale: current.scale / 1.05 }));
+      setTransform((current) => clampForCurrentImage({ ...current, scale: current.scale / 1.05 }));
     if (["r", "R"].includes(event.key)) resetTransform();
     if (event.key === "0") centerTransform();
   }
@@ -151,8 +194,11 @@ export function WallpaperCanvas() {
       className="wallpaper-canvas-wrap"
       tabIndex={0}
       role="application"
+      data-composition-view={showOriginalComposition ? "original" : "edited"}
       aria-label={t(
-        "Wallpaper canvas. Drag to reposition, scroll to zoom, use arrow keys to move.",
+        showOriginalComposition
+          ? "Original composition preview. Start editing to return to your edited composition."
+          : "Wallpaper canvas. Drag to reposition, scroll to zoom, use arrow keys to move.",
       )}
       onPointerDown={pointerDown}
       onPointerMove={pointerMove}
